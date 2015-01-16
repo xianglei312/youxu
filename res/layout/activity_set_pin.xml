@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:concordya="http://schemas.android.com/apk/res/com.concordy.pro"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#88cccccc"
+    android:orientation="vertical" >
+    <com.concordy.pro.ui.ItemClickView
+	    android:id="@+id/icv_pin_set"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    concordya:leftImg ="@drawable/icon"
+	    concordya:txt="@string/str_pin_set"
+	   />
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:gravity="center_vertical"
+        >
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dip"
+            android:id="@+id/tv_set_pin_toggle"
+            android:text="@string/tv_set_pin_tiggle"
+            />
+        <com.concordy.pro.ui.ToggleButton
+            android:id="@+id/tog_btn_pin_set"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dip"
+            />
+    </RelativeLayout>
+    
+</LinearLayout>

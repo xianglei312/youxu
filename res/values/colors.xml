@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bottom_bg">#98cccccc</color>
+    <color name="gv_item">#0099FF</color>
+    <color name="bg_window">#ffe5e5e5</color>
+    <color name="bg_page">#ffebebeb</color>
+    <color name="bg_tab_selected">#EFEFEF</color>
+    <color name="bg_tab_normal">#ffffff</color>
+    <color name="bg_tab_pressed">#6633b5e5</color>
+    <color name="bg_tab_pressed2">#ff3898ff</color> <!-- 蓝色 -->
+	<color name="txt_link">#3399FF</color>
+    <color name="txt_title">#ff333333</color>
+    <color name="txt_small">#ff7a7a7a</color>
+    <color name="txt_big">#ff717171</color>
+    <color name="item_divider">#d7d7d7</color>
+    <color name="detail_screen_bg">#adadad</color>
+    <color name="progress">#0294f0</color>
+    <color name="menu_bg_normal">#f0f1f3</color>
+    <color name="menu_bg_press">#cecece</color>
+    <color name="white">#ffffff</color>
+
+</resources>

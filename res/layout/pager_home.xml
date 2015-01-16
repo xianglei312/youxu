@@ -1,0 +1,82 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical" >
+    <com.concordy.pro.ui.SlideShowView
+        android:id="@+id/ssv_home"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/gv_width" />
+
+    <Button
+        android:id="@+id/bt_add_bill"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dip"
+        android:background="@drawable/btn_bottom_bg"
+        android:text="@string/bt_add_bill" />
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:id="@+id/ll_no_data"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="invisible" >
+
+            <!--
+                <ImageView 
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:id="@+id/iv_no_data_home"
+               android:src="@drawable/ic_empty_page"
+               />
+            -->
+
+            <TextView
+                android:id="@+id/tv_link_add_bill"
+                style="@style/tv_link_text"
+                android:text="@string/tv_nodata" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dip" >
+
+            <LinearLayout
+                android:id="@+id/ll_sort_p"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/btn_sort_latest"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="最新" />
+
+                <Button
+                    android:id="@+id/btn_sort_amount"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="金额" />
+            </LinearLayout>
+
+            <com.concordy.pro.ui.PullListView
+                android:id="@+id/lv_home_bill"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ll_sort_p" >
+            </com.concordy.pro.ui.PullListView>
+        </RelativeLayout>
+    </RelativeLayout>
+
+</LinearLayout>

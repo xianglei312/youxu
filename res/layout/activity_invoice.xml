@@ -1,0 +1,134 @@
+<ScrollView xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:auto ="http://schemas.android.com/apk/res/com.concordy.pro"
+    android:id="@+id/scrollview"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:scrollbars="vertical" >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+        <ImageView
+            android:id="@+id/iv_bill"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <com.concordy.pro.ui.widget.CustomerEditText
+            android:id="@+id/cet_bill_vendor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            auto:rightImg="@drawable/dropdown_select"
+            />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/companytext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Invoice Date" />
+
+            <com.concordy.pro.ui.widget.CustomerEditText
+                android:id="@+id/cet_bill_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                auto:rightImg="@drawable/dropdown_select"
+                 />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <ListView
+                android:id="@+id/lv_item_bill"
+                android:layout_width="fill_parent"
+                android:layout_height="95dp" >
+            </ListView>
+
+            <Button
+                android:id="@+id/btn_add_bill_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add MORE ITEM" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/total_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Total:" />
+
+            <EditText
+                android:id="@+id/et_total_amount_bill"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:ems="10" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/data"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Due Date" />
+
+            <com.concordy.pro.ui.widget.CustomerEditText
+                android:id="@+id/cet_bill_duedate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                 auto:rightImg="@drawable/dropdown_select"
+               />
+        </LinearLayout>
+
+        <include
+            android:id="@+id/linearlayout"
+            layout="@layout/notes"
+            android:visibility="gone" >
+        </include>
+
+        <Button
+            android:id="@+id/btn_show_more_bill"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#fff"
+            android:text="+ More" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/btn_draft_bill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Save Draft" />
+
+            <Button
+                android:id="@+id/btn_sub_bill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/Send" />
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

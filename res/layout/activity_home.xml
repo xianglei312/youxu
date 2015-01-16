@@ -1,0 +1,38 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    tools:context=".RegisterActivity" >
+    <!-- <include
+        android:id="@+id/title_bar"
+        layout="@layout/layout_title_bar" /> -->
+   <LinearLayout
+       android:layout_marginTop="20dip"
+       android:layout_width="fill_parent"
+       android:layout_height="wrap_content"
+       android:orientation="horizontal"
+       >
+   <Button 
+       android:layout_width="0dip"
+       android:layout_weight="1"
+       android:layout_height="wrap_content"
+       android:id="@+id/bt_add_bill"
+       android:text="@string/bt_add_bill"
+       />
+   <Button 
+       android:layout_width="0dip"
+       android:layout_weight="1"
+       android:layout_height="wrap_content"
+       android:id="@+id/bt_see_bill"
+       android:text="@string/bt_see_bill"
+       />
+   </LinearLayout>
+   <ListView 
+       android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/lv_home_bill"
+       >
+   </ListView>
+</LinearLayout>

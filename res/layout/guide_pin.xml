@@ -1,0 +1,46 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="5dip" >
+
+    <ImageView
+        android:id="@+id/iv_pin_lock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dip"
+        android:layout_marginTop="20dip"
+        android:src="@drawable/pin_ic_app_lock" />
+
+    <TextView
+        android:id="@+id/tv_code_guide"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingLeft="20dip"
+        android:paddingRight="20dip"
+        android:text="@string/str_tv_pin_content" />
+	 <EditText
+        android:id="@+id/et_pin_guide"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/et_pin_hint" />
+    <TextView
+        android:textColor="@color/link_text_color"
+        android:id="@+id/tv_skip_guide"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:text="@string/btn_skip_guide" />
+    <Button
+        android:visibility="invisible"
+        android:layout_gravity="bottom"
+        android:id="@+id/btn_next_login"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/btn_bottom_bg"
+        android:text="@string/btn_next_guide" />
+
+</LinearLayout>

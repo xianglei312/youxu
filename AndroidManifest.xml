@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.concordy.pro"
+    android:versionCode="1"
+    android:versionName="1.0" >
+    <uses-sdk
+        android:minSdkVersion="11"
+        android:targetSdkVersion="17" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_SMS"/>
+    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/CustomTitleBar" >
+        <activity
+            android:name="com.concordy.pro.WelcomeActivity"
+            android:label="@string/app_name" >
+        </activity>
+        <activity android:name="com.concordy.pro.RegisterActivity" 
+             android:configChanges="keyboard|screenLayout|screenSize"
+            android:theme="@style/CustomTitleBar" >
+		</activity>
+        <activity android:name="com.concordy.pro.MainActivity"
+            android:configChanges="keyboard|screenLayout|screenSize"
+             >
+        </activity>
+        <activity
+            android:name="com.concordy.pro.CameraActivity"
+            android:configChanges="keyboard|screenLayout|screenSize"
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity android:name="com.concordy.pro.SplashActivity"
+            android:theme="@android:style/Theme.Black.NoTitleBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="com.concordy.pro.PinLoginActivity"></activity>
+        <activity android:name="com.concordy.pro.PinSetItemActivity"></activity>
+        <activity android:name="com.concordy.pro.ConfigSetActivity"></activity>
+        <activity android:name="com.concordy.pro.InvoiceActivity"
+                  android:label="@string/title_activity_invoice" >
+        </activity>
+        <activity android:name="com.concordy.pro.LoginActivity" >
+        </activity>
+        <activity android:name="com.concordy.pro.PinSetActivity" >
+        </activity>
+        <activity android:name="com.concordy.pro.CompanyInf"
+                  android:label="@string/title_activity_company_inf" >
+        </activity>
+        <activity android:name="com.concordy.pro.RecurringInvoice"
+                  android:label="@string/title_activity_recurring__invoice">
+        </activity>
+        <service android:name="com.leo.demo.receiver.SleepStateService"></service>
+    </application>
+
+</manifest>

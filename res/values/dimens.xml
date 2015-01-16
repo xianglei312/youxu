@@ -1,0 +1,10 @@
+<resources>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+	<dimen name="gv_width">100dp</dimen>
+	<!-- 轮播高度 -->
+	<dimen name="ssv_height">300dp</dimen>
+	<dimen name="img_point_margin">5.0dip</dimen>
+</resources>

@@ -1,0 +1,66 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_margin="10dip"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+        <EditText
+            android:id="@+id/et_phone_number"
+            style="@android:attr/textStyle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:drawableLeft="@drawable/ev_user"
+            android:hint="@string/str_ev_user" />
+        
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_margin="10dip"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/et_verical_code"
+            android:layout_width="208dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="1"
+            android:drawableLeft="@drawable/ev_pass"
+            android:hint="@string/str_ev_msgcode" />
+
+        <Button
+            android:id="@+id/btn_request_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/btn_verical"
+            android:text="@string/str_request_code" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:background="@null"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="0dp" >
+
+        <Button
+            android:id="@+id/btn_done_regist"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dip"
+            android:background="@drawable/btn_bottom_bg"
+            android:padding="10dp"
+            android:text="@string/str_regist"
+            />
+    </LinearLayout>
+
+</LinearLayout>

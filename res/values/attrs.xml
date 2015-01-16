@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	 <declare-styleable name="ItemClickView">
+	      <attr name="txt" format="reference|string" />
+	      <attr name="leftImg" format = "reference"/>
+	      <attr name="bottomLine" format = "boolean"/>
+	 </declare-styleable>
+	 <declare-styleable name="ToggleButton">
+	      <attr name="toggle" format = "boolean"/>
+	 </declare-styleable>
+	 <declare-styleable name="EditWidget">
+	      <attr name="rightImg" format = "reference"/>
+	 </declare-styleable>
+</resources>

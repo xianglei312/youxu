@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:descendantFocusability = "blocksDescendants"
+       android:orientation="horizontal" >
+    <CheckBox
+        android:id="@+id/cb_item_bill_check"
+        style="@null"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/ll_item_home"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+        <ImageView
+            android:id="@+id/iv_item_bill_icon"
+            android:layout_width="50dip"
+            android:layout_height="50dip"
+            android:layout_gravity="center"
+            android:src="@drawable/icon_list_bill" />
+        <LinearLayout
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:layout_weight="3" >
+            <TextView
+                android:id="@+id/tv_item_bill_info"
+                style="@style/tv_normal_text"
+                android:text="Vendor，item1，item2" />
+
+            <TextView
+                android:id="@+id/tv_item_bill_date"
+                style="@style/tv_below_text"
+                android:text="2014年11月24日 15:42:18" />
+        </LinearLayout>
+        <TextView 
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textColor="#FF6633"
+            android:gravity="center"
+            android:id="@+id/tv_item_bill_money"
+            />
+    </LinearLayout>
+    <Button
+        android:id="@+id/bt_item_pay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/btn_verical"
+        android:text="pay" />
+</LinearLayout>

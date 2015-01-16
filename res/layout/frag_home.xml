@@ -1,0 +1,51 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+   >
+  <RelativeLayout 
+      android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1.0" 
+      >
+      <view
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        class="com.concordy.pro.ui.MyViewPager"/>
+  </RelativeLayout>
+  
+    <!-- <android.support.v4.view.ViewPager -->
+    <!-- android:id="@+id/layout_content" -->
+    <!-- android:layout_width="match_parent" -->
+    <!-- android:layout_height="0dip" -->
+    <!-- android:layout_weight="1.0" > -->
+    <!-- </android.support.v4.view.ViewPager> -->
+    <RadioGroup
+        android:id="@+id/main_radio"
+        android:layout_width="fill_parent"
+        android:layout_height="60dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/bottom_tab_bg"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingTop="2dp" >
+        <RadioButton
+            android:id="@+id/rb_tab_left"
+            style="@style/main_tab_bottom"
+            android:drawableTop="@drawable/icon_percenter"
+            android:text="@string/tab_left" />
+        <RadioButton
+            android:id="@+id/rb_tab_center"
+            style="@style/main_tab_bottom"
+            android:drawableTop="@drawable/icon_report"
+            android:text="@string/tab_center" />
+		 <RadioButton
+            android:id="@+id/rb_tab_right"
+            style="@style/main_tab_bottom"
+            android:drawableTop="@drawable/icon_setting"
+            android:text="@string/tab_right" />
+    </RadioGroup>
+</LinearLayout>
