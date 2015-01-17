@@ -1,10 +1,11 @@
 package com.concordy.pro.bean;
 
+import java.io.Serializable;
 import java.util.List;
 /*****
  * @author Scleo
  */
-public class Bill {
+public class Bill implements Serializable {
 	private String id ;
 	private	String billDate;
 	private Category category;
@@ -12,17 +13,22 @@ public class Bill {
 	private String description;
 	private String dueDate;
 	private int amount;
-	private List<Itemlist> items;
+	private List<Item> itemList;
 	private String lastUpdatedOn;
 	private int status;
 	private Vendor vendor;
 	private RecurringSetting recurringSetting;
-
-	public class Item{
+	public List<Item> getItemList() {
+		return itemList;
+	}
+	public void setItemList(List<Item> itemList) {
+		this.itemList = itemList;
+	}
+	public static class Item implements Serializable{
 		private String billId;
 		private String id;
 		private String name;
-		private int pricePerUnit;
+		private String pricePerUnit;
 		private int quantity;
 		private int total;
 		public String getBillId() {
@@ -43,10 +49,10 @@ public class Bill {
 		public void setName(String name) {
 			this.name = name;
 		}
-		public int getPricePerUnit() {
+		public String getPricePerUnit() {
 			return pricePerUnit;
 		}
-		public void setPricePerUnit(int pricePerUnit) {
+		public void setPricePerUnit(String pricePerUnit) {
 			this.pricePerUnit = pricePerUnit;
 		}
 		public int getQuantity() {
@@ -63,7 +69,7 @@ public class Bill {
 		}
 
 		public Item(){}
-		public Item(String billId, String id, String name, int pricePerUnit,
+		public Item(String billId, String id, String name, String pricePerUnit,
 				int quantity, int total) {
 			super();
 			this.billId = billId;
@@ -72,6 +78,11 @@ public class Bill {
 			this.pricePerUnit = pricePerUnit;
 			this.quantity = quantity;
 			this.total = total;
+		}
+		public Item(String name, int number, String price) {
+			this.name = name;
+			this.pricePerUnit = price;
+			this.quantity  = number;
 		}
 		@Override
 		public String toString() {
@@ -85,43 +96,6 @@ public class Bill {
 	}
 
 	public Bill(){};
-
-
-	public Bill(String id, String billDate, Category category,
-			String createOn, String description, String dueDate,
-			boolean isRecurring, List<Itemlist> items, String lastUpdatedOn,
-			int status, Vendor vendor,int amount,RecurringSetting recurringSetting) {
-		super();
-		this.id = id;
-		this.billDate = billDate;
-		this.category = category;
-		this.createOn = createOn;
-		this.description = description;
-		this.dueDate = dueDate;
-		this.items = items;
-		this.lastUpdatedOn = lastUpdatedOn;
-		this.status = status;
-		this.vendor = vendor;
-		this.amount = amount;
-		this.recurringSetting = recurringSetting;
-	}
-	public Bill(String billDate, Category category,
-			String createOn, String description, String dueDate,
-			boolean isRecurring, List<Itemlist> items, String lastUpdatedOn,
-			int status, Vendor vendor,int amount,RecurringSetting recurringSetting) {
-		super();
-		this.billDate = billDate;
-		this.category = category;
-		this.createOn = createOn;
-		this.description = description;
-		this.dueDate = dueDate;
-		this.items = items;
-		this.lastUpdatedOn = lastUpdatedOn;
-		this.status = status;
-		this.vendor = vendor;
-		this.amount = amount;
-		this.recurringSetting = recurringSetting;
-	}
 	public Bill(String billDate, int amount,String dueDate) {
 		super();
 		this.billDate = billDate;
@@ -187,12 +161,6 @@ public class Bill {
 	}
 
 
-	public List<Itemlist> getItems() {
-		return items;
-	}
-	public void setItems(List<Itemlist> items) {
-		this.items = items;
-	}
 	public String getLastUpdatedOn() {
 		return lastUpdatedOn;
 	}
@@ -215,7 +183,7 @@ public class Bill {
 	public String toString() {
 		return "Bill [id=" + id + ", billDate=" + billDate + ", category="
 				+ category + ", createOn=" + createOn + ", description="
-				+ description + ", dueDate=" + dueDate + ", items=" + items + ", lastUpdatedOn="
+				+ description + ", dueDate=" + dueDate + ", items=" + itemList + ", lastUpdatedOn="
 				+ lastUpdatedOn + ", status=" + status + ", vendor=" + vendor
 				+ "]";
 	}

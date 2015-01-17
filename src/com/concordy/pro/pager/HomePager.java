@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.sax.StartElementListener;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -157,12 +158,12 @@ public class HomePager extends BasePager implements OnClickListener,
 			}
 			return null;
 		}else{
-			LogUtils.d("next:"+mCurrBill.getNext());
+			/*LogUtils.d("next:"+mCurrBill.getNext());
 			LogUtils.d("pre:"+mCurrBill.getPre());
 			LogUtils.d("counts:"+mCurrBill.getTotalCount());
 			LogUtils.d("pages:"+mCurrBill.getTotalPages());
-			LogUtils.d("bill:"+mCurrBill.getBills().toString());
-			return (T) mCurrBill.getBills();
+			//LogUtils.d("bill:"+mCurrBill.getBills().toString());
+*/			return (T) mCurrBill.getBills();
 		}
 	}
 	/**
@@ -415,13 +416,14 @@ public class HomePager extends BasePager implements OnClickListener,
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
+		Toast.makeText(ct,"第"+position+"个被点击了",0).show();
 		if(mListBills!=null){
 			Bill bill = mListBills.get(position);
 			LogUtils.d("bill:"+bill.toString());
 			openBillDetail(bill);
 		}
 		//LogUtils.d("第"+position+"个被点击了");
-		Toast.makeText(ct,"第"+position+"个被点击了",0).show();
+		
 	}
 	/**
 	 * 跳转到
@@ -430,7 +432,9 @@ public class HomePager extends BasePager implements OnClickListener,
 	private void openBillDetail(Bill bill) {
 		Intent intent = new Intent(ct, InvoiceActivity.class);
 		if(bill!=null){
-			
+			Bundle b = new Bundle();
+			b.putSerializable("bill", bill);
+			intent.putExtras(b);
 		}
 		ct.startActivity(intent);
 	}

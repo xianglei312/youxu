@@ -1,5 +1,9 @@
 package com.concordy.pro;
 
+import java.io.UnsupportedEncodingException;
+
+import org.apache.http.entity.StringEntity;
+
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -86,11 +90,17 @@ public class LoginActivity extends BaseTitleActivity implements OnClickListener 
 				.toString(), etPwd.getText().toString()));
 		HttpUtils http = new HttpUtils();
 		RequestParams params = new RequestParams();
-
 		params.setHeader(ContentValue.CONTENT_TYPE,
 				ContentValue.APPLICATION_JSON);
 		params.setHeader(ContentValue.ACCEPT_TYPE,
 				ContentValue.APPLICATION_JSON);
+		StringEntity entity;
+		try {
+			entity = new StringEntity(json);
+			params.setBodyEntity(entity);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 		http.send(HttpMethod.POST, url, params, new RequestCallBack<String>() {
 			
 			@Override
@@ -106,17 +116,23 @@ public class LoginActivity extends BaseTitleActivity implements OnClickListener 
 
 			@Override
 			public void onFailure(HttpException arg0, String arg1) {
+				arg0.printStackTrace();
 				PromptManager.showToast(LoginActivity.this, arg1);
 				dismissDialog();
 			}
-
 			@Override
-			public void onSuccess(ResponseInfo<String> arg0) {
-				LogUtils.d("code:" + arg0.statusCode + ",result:" + arg0.result);
-				PromptManager.showToast(LoginActivity.this, "code:"
-						+ arg0.statusCode + "\n result:" + arg0.result);
+			public void onSuccess(ResponseInfo<String> info) {
+				LogUtils.d("code:" + info.statusCode + ",result:" + info.result);
+				/*PromptManager.showToast(LoginActivity.this, "code:"
+						+ info.statusCode + "\n result:" + info.result);*/
 				dismissDialog(); 
-
+				if(info.statusCode==200){
+					User user = CommonUtil.json2Bean(info.result, User.class);
+					saveUserinfo(user);
+					Intent it = new Intent(ct, MainActivity.class);
+					it.putExtra("user", user);
+					startActivity(it);
+				}
 			}
 		});
 		/*

@@ -1,9 +1,9 @@
 package com.concordy.pro.adapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -13,36 +13,35 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+
 import com.concordy.pro.R;
+import com.concordy.pro.bean.Bill.Item;
 import com.concordy.pro.utils.SideslipHorScrView;
 public class Itemadapter extends BaseAdapter{
 
 	private LayoutInflater mInflater;
-	public ArrayList<String> arr;
+	public List<Item> items;
 	private Context mContext;
 	private Delete delete;
 	
-	public Itemadapter(Context context,ArrayList<String> arr,com.concordy.pro.adapter.Itemadapter.Delete delete2) {  
+	public Itemadapter(Context context,List<Item> arr,com.concordy.pro.adapter.Itemadapter.Delete delete2) {  
 		super(); 
 		this.delete = delete2;
 		this.mContext = context;  
 		mInflater = LayoutInflater.from(context);
-		this.arr = arr;
-		arr = new ArrayList<String>();  
-		for(int i=0;i<arr.size();i++){    //listview初始化
-			arr.add("");  
-		}  
+		this.items = arr;
+		//arr = new ArrayList<Item>();  
 	}  
 
 
 	@Override
 	public int getCount() {
-		return arr.size();
+		return items.size();
 	}
 
 	@Override
 	public Object getItem(int position) {
-		return arr.get(position) ;
+		return items.get(position) ;
 	}
 
 	@Override
@@ -54,7 +53,7 @@ public class Itemadapter extends BaseAdapter{
 		// TODO Auto-generated method stub
 		
 		final ViewHolder holder;
-	
+		Item  item = items.get(position);
 		if(convertView == null){
 			holder = new ViewHolder();
 
@@ -73,22 +72,11 @@ public class Itemadapter extends BaseAdapter{
 		else{
 			holder = (ViewHolder) convertView.getTag();
 		}
-		
-		holder.itemname.setHint(arr.get(position));
-		
-		holder.itemname.setOnFocusChangeListener(new OnFocusChangeListener() {  
-			@Override  
-			public void onFocusChange(View v, boolean hasFocus) {  
-				// TODO Auto-generated method stub  
-				if(arr.size()>0){  
-					arr.set(position, holder.itemname.getText().toString());  
-				}  
-			}  
-		});  
-		
-		//这里testData.get(position).get("title1"))，其实就是从list集合(testData)中取出对应索引的map，然后再根据键值对取值
-//		edittext.setHint("项目：");
-		
+		if(item!=null){
+			holder.itemname.setText(item.getName());
+			holder.itemnumber.setText(item.getQuantity());
+			holder.itemprice.setText(item.getPricePerUnit());
+		}
 		holder.itemname.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -104,7 +92,6 @@ public class Itemadapter extends BaseAdapter{
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				holder.itemnumber.getText().toString().trim();
-				
 			}
 		});
 		holder.itemprice.setOnClickListener(new OnClickListener() {
