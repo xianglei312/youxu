@@ -22,13 +22,7 @@ import com.concordy.pro.utils.LogUtils;
 import com.concordy.pro.utils.PromptManager;
 import com.concordy.pro.utils.SharedPreferencesUtils;
 import com.concordy.pro.utils.StringUtils;
-import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.ViewUtils;
-import com.lidroid.xutils.exception.HttpException;
-import com.lidroid.xutils.http.RequestParams;
-import com.lidroid.xutils.http.ResponseInfo;
-import com.lidroid.xutils.http.callback.RequestCallBack;
-import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.lidroid.xutils.view.annotation.ViewInject;
 
 public class LoginActivity extends BaseTitleActivity implements OnClickListener {
@@ -84,44 +78,7 @@ public class LoginActivity extends BaseTitleActivity implements OnClickListener 
 		String url = ContentValue.SERVER_URL + "/" + ContentValue.LOGIN_URI;
 		String json = CommonUtil.bean2Json(new User(etUsername.getText()
 				.toString(), etPwd.getText().toString()));
-		HttpUtils http = new HttpUtils();
-		RequestParams params = new RequestParams();
-
-		params.setHeader(ContentValue.CONTENT_TYPE,
-				ContentValue.APPLICATION_JSON);
-		params.setHeader(ContentValue.ACCEPT_TYPE,
-				ContentValue.APPLICATION_JSON);
-		http.send(HttpMethod.POST, url, params, new RequestCallBack<String>() {
-			
-			@Override
-			public void onLoading(long total, long current, boolean isUploading) {
-				super.onLoading(total, current, isUploading);
-			}
-
-			@Override
-			public void onStart() {
-				super.onStart();
-				showLoadDialog();
-			}
-
-			@Override
-			public void onFailure(HttpException arg0, String arg1) {
-				PromptManager.showToast(LoginActivity.this, arg1);
-				dismissDialog();
-			}
-
-			@Override
-			public void onSuccess(ResponseInfo<String> arg0) {
-				LogUtils.d("code:" + arg0.statusCode + ",result:" + arg0.result);
-				PromptManager.showToast(LoginActivity.this, "code:"
-						+ arg0.statusCode + "\n result:" + arg0.result);
-				dismissDialog(); 
-
-			}
-		});
-		/*
-		 * mLoginTask = new LoginAsyncTask(); mLoginTask.execute(url, json);
-		 */
+		new LoginAsyncTask().execute(url, json);
 	}
 
 	/********** 登录成功存储User信息 ***********/
@@ -196,7 +153,6 @@ public class LoginActivity extends BaseTitleActivity implements OnClickListener 
 	}
 
 	private int httpCode;
-	private LoginAsyncTask mLoginTask;
 
 	class LoginAsyncTask extends AsyncTask<String, Void, String> {
 		@Override

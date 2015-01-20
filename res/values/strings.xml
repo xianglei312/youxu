@@ -8,9 +8,6 @@
     <string name="tv_title_pin">Pin码设置</string>
     <string name="tv_title_regist">注册</string>
     <string name="tv_load_data">正在请求服务器...</string>
-    <string name="tv_item_name">品名</string>
-    <string name="tv_item_num">数量</string>
-    <string name="tv_item_price">单价</string>
     <!-- Bill状态 -->
     <string-array name="bill_state">
         <item>已保存</item>

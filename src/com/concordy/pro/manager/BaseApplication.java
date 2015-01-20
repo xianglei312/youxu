@@ -1,8 +1,6 @@
 package com.concordy.pro.manager;
 
-import com.concordy.pro.utils.ContentValue;
 import com.concordy.pro.utils.LogUtils;
-import com.concordy.pro.utils.SharedPreferencesUtils;
 
 import android.app.Application;
 import android.os.Handler;
@@ -10,7 +8,6 @@ import android.os.Looper;
 
 /**
  * @author Scleo
- *
  */
 public class BaseApplication extends Application {
 	/** 全局Context，原理是因为Application类是应用首先运行的，所以在我们的代码调用时，该值已经被赋值过了 */
@@ -25,6 +22,7 @@ public class BaseApplication extends Application {
 	private static Looper mMainLooper;
 	@Override
 	public void onCreate() {
+		LogUtils.d("application启动了");
 		mMainThreadId = android.os.Process.myTid();
 		mMainThread = Thread.currentThread();
 		mMainThreadHandler = new Handler();

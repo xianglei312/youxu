@@ -9,8 +9,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -34,13 +33,13 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.concordy.pro.bean.Bill;
-import com.concordy.pro.http.NetUtils;
 import com.google.gson.Gson;
 /**
  * 
  * @author Scleo
  *
  */
+@SuppressLint({ "DefaultLocale", "SimpleDateFormat" })
 public class CommonUtil {
 	/**
 	 * Dialog显示框
@@ -88,6 +87,7 @@ public class CommonUtil {
 	 * @param b
 	 * @return
 	 */
+	@SuppressLint("DefaultLocale")
 	public static String byteToHexString(byte[] b) {
 		StringBuffer hexString = new StringBuffer();
 		for (int i = 0; i < b.length; i++) {
@@ -249,14 +249,6 @@ public class CommonUtil {
 		listView.setLayoutParams(params);
 	}
 	
-	/**
-	 * 通知服务器，发送短信验证码到指定号码
-	 */
-	public static String noticeSMSCode(String number) {
-		String url = ContentValue.SERVER_URI+"/"+ContentValue.VERICAL_REQUEST;
-		NetUtils net = new NetUtils();
-		return net.doPostOfHttpClientFor(url, "="+number);
-	}
 	/**
 	 * 将对象转换成json字符串
 	 * @param t bean对象

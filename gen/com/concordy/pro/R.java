@@ -349,52 +349,52 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int city=0x7f040000;
     }
     public static final class string {
-        public static final int SeeVenders=0x7f070059;
-        public static final int Send=0x7f070057;
+        public static final int SeeVenders=0x7f070056;
+        public static final int Send=0x7f070054;
         public static final int action_settings=0x7f070001;
         public static final int app_name=0x7f070000;
-        public static final int bill_commited=0x7f070012;
-        public static final int bill_finished=0x7f070015;
-        public static final int bill_paid=0x7f070014;
-        public static final int bill_paying=0x7f070013;
-        public static final int bill_saved=0x7f070011;
+        public static final int bill_commited=0x7f07000f;
+        public static final int bill_finished=0x7f070012;
+        public static final int bill_paid=0x7f070011;
+        public static final int bill_paying=0x7f070010;
+        public static final int bill_saved=0x7f07000e;
         /**  Other 
          */
-        public static final int bt_add_bill=0x7f070030;
-        public static final int bt_see_bill=0x7f070031;
-        public static final int btn_change_phone=0x7f07002c;
-        public static final int btn_next_guide=0x7f07002f;
-        public static final int btn_other_login=0x7f07002e;
+        public static final int bt_add_bill=0x7f07002d;
+        public static final int bt_see_bill=0x7f07002e;
+        public static final int btn_change_phone=0x7f070029;
+        public static final int btn_next_guide=0x7f07002c;
+        public static final int btn_other_login=0x7f07002b;
         /**  按钮信息 
          */
-        public static final int btn_request_code=0x7f07002a;
-        public static final int btn_request_recode=0x7f07002b;
-        public static final int btn_skip_guide=0x7f07002d;
+        public static final int btn_request_code=0x7f070027;
+        public static final int btn_request_recode=0x7f070028;
+        public static final int btn_skip_guide=0x7f07002a;
         /**  company显示内容 
          */
-        public static final int cancel=0x7f07005a;
-        public static final int com_adress=0x7f07005e;
-        public static final int com_emill=0x7f07005f;
-        public static final int com_name=0x7f07005c;
-        public static final int com_notes=0x7f070060;
-        public static final int com_phone=0x7f07005d;
-        public static final int enery=0x7f070063;
+        public static final int cancel=0x7f070057;
+        public static final int com_adress=0x7f07005b;
+        public static final int com_emill=0x7f07005c;
+        public static final int com_name=0x7f070059;
+        public static final int com_notes=0x7f07005d;
+        public static final int com_phone=0x7f07005a;
+        public static final int enery=0x7f070060;
         /**  提示信息 
          */
-        public static final int err_no_network=0x7f07001d;
-        public static final int err_phone_empty=0x7f07001e;
-        public static final int err_pin_empty=0x7f070023;
-        public static final int err_pin_error=0x7f070024;
-        public static final int err_pin_lock=0x7f070025;
-        public static final int err_pwd_error=0x7f070022;
-        public static final int err_send_failed=0x7f070028;
-        public static final int err_server_error=0x7f070027;
-        public static final int err_unknow=0x7f070029;
-        public static final int err_user_lock=0x7f070026;
-        public static final int err_vercode_empty=0x7f07001f;
-        public static final int err_vercode_error=0x7f070020;
-        public static final int err_vercode_type_error=0x7f070021;
-        public static final int et_pin_hint=0x7f07001c;
+        public static final int err_no_network=0x7f07001a;
+        public static final int err_phone_empty=0x7f07001b;
+        public static final int err_pin_empty=0x7f070020;
+        public static final int err_pin_error=0x7f070021;
+        public static final int err_pin_lock=0x7f070022;
+        public static final int err_pwd_error=0x7f07001f;
+        public static final int err_send_failed=0x7f070025;
+        public static final int err_server_error=0x7f070024;
+        public static final int err_unknow=0x7f070026;
+        public static final int err_user_lock=0x7f070023;
+        public static final int err_vercode_empty=0x7f07001c;
+        public static final int err_vercode_error=0x7f07001d;
+        public static final int err_vercode_type_error=0x7f07001e;
+        public static final int et_pin_hint=0x7f070019;
         /** 
     <string name="gv_txt_1">To Do</string>
     <string name="gv_txt_2">SchedulePayment</string>
@@ -402,75 +402,72 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
     <string name="gv_txt_4">  View  Balance</string>
     
          */
-        public static final int gv_txt_1=0x7f070017;
-        public static final int gv_txt_2=0x7f070018;
-        public static final int gv_txt_3=0x7f070019;
-        public static final int gv_txt_4=0x7f07001a;
+        public static final int gv_txt_1=0x7f070014;
+        public static final int gv_txt_2=0x7f070015;
+        public static final int gv_txt_3=0x7f070016;
+        public static final int gv_txt_4=0x7f070017;
         public static final int hello_world=0x7f070002;
-        public static final int load_error=0x7f070055;
-        public static final int month=0x7f070064;
-        public static final int repeats=0x7f070062;
-        public static final int rpeat=0x7f070065;
-        public static final int save=0x7f07005b;
-        public static final int starts=0x7f070066;
-        public static final int str_bt_bank=0x7f070039;
-        public static final int str_bt_company_info=0x7f07003a;
-        public static final int str_bt_quick_start=0x7f07003b;
-        public static final int str_bt_submit=0x7f07003c;
-        public static final int str_ev_msgcode=0x7f070042;
-        public static final int str_ev_pass=0x7f070040;
-        public static final int str_ev_repass=0x7f070041;
-        public static final int str_ev_user=0x7f07003f;
-        public static final int str_forgot_psd=0x7f07003d;
-        public static final int str_more_set=0x7f070036;
-        public static final int str_pin_set=0x7f070035;
-        public static final int str_pin_verify=0x7f070038;
-        public static final int str_quick_add=0x7f07004c;
-        public static final int str_regist=0x7f070033;
-        public static final int str_regist_success=0x7f070047;
-        public static final int str_remem_user=0x7f07003e;
-        public static final int str_request_code=0x7f070032;
-        public static final int str_send_failed=0x7f070046;
-        public static final int str_send_failure=0x7f070044;
-        public static final int str_send_success=0x7f070043;
-        public static final int str_server_error=0x7f070045;
-        public static final int str_signin=0x7f070034;
-        public static final int str_tv_pin_content=0x7f07004a;
-        public static final int str_tv_pin_content_login=0x7f07004b;
-        public static final int str_tv_welcome_content=0x7f070049;
-        public static final int str_tv_welcome_title=0x7f070048;
-        public static final int tab_back=0x7f070052;
-        public static final int tab_camera=0x7f07004f;
-        public static final int tab_center=0x7f070050;
+        public static final int load_error=0x7f070052;
+        public static final int month=0x7f070061;
+        public static final int repeats=0x7f07005f;
+        public static final int rpeat=0x7f070062;
+        public static final int save=0x7f070058;
+        public static final int starts=0x7f070063;
+        public static final int str_bt_bank=0x7f070036;
+        public static final int str_bt_company_info=0x7f070037;
+        public static final int str_bt_quick_start=0x7f070038;
+        public static final int str_bt_submit=0x7f070039;
+        public static final int str_ev_msgcode=0x7f07003f;
+        public static final int str_ev_pass=0x7f07003d;
+        public static final int str_ev_repass=0x7f07003e;
+        public static final int str_ev_user=0x7f07003c;
+        public static final int str_forgot_psd=0x7f07003a;
+        public static final int str_more_set=0x7f070033;
+        public static final int str_pin_set=0x7f070032;
+        public static final int str_pin_verify=0x7f070035;
+        public static final int str_quick_add=0x7f070049;
+        public static final int str_regist=0x7f070030;
+        public static final int str_regist_success=0x7f070044;
+        public static final int str_remem_user=0x7f07003b;
+        public static final int str_request_code=0x7f07002f;
+        public static final int str_send_failed=0x7f070043;
+        public static final int str_send_failure=0x7f070041;
+        public static final int str_send_success=0x7f070040;
+        public static final int str_server_error=0x7f070042;
+        public static final int str_signin=0x7f070031;
+        public static final int str_tv_pin_content=0x7f070047;
+        public static final int str_tv_pin_content_login=0x7f070048;
+        public static final int str_tv_welcome_content=0x7f070046;
+        public static final int str_tv_welcome_title=0x7f070045;
+        public static final int tab_back=0x7f07004f;
+        public static final int tab_camera=0x7f07004c;
+        public static final int tab_center=0x7f07004d;
         /**  tab标签显示内容 
          */
-        public static final int tab_left=0x7f07004e;
-        public static final int tab_next=0x7f070053;
-        public static final int tab_quick_add=0x7f070054;
-        public static final int tab_right=0x7f070051;
-        public static final int title_activity_company_inf=0x7f070058;
-        public static final int title_activity_invoice=0x7f070056;
-        public static final int title_activity_recurring__invoice=0x7f070061;
-        public static final int tv_bottom_welcome=0x7f07001b;
-        public static final int tv_item_name=0x7f070007;
-        public static final int tv_item_num=0x7f070008;
-        public static final int tv_item_price=0x7f070009;
+        public static final int tab_left=0x7f07004b;
+        public static final int tab_next=0x7f070050;
+        public static final int tab_quick_add=0x7f070051;
+        public static final int tab_right=0x7f07004e;
+        public static final int title_activity_company_inf=0x7f070055;
+        public static final int title_activity_invoice=0x7f070053;
+        public static final int title_activity_recurring__invoice=0x7f07005e;
+        public static final int tv_bottom_welcome=0x7f070018;
         public static final int tv_load_data=0x7f070006;
-        public static final int tv_nodata=0x7f07004d;
-        public static final int tv_set_pin_tiggle=0x7f070037;
+        public static final int tv_nodata=0x7f07004a;
+        public static final int tv_set_pin_tiggle=0x7f070034;
         public static final int tv_title_login=0x7f070003;
         public static final int tv_title_pin=0x7f070004;
         public static final int tv_title_regist=0x7f070005;
         /**  Welcome界面 
          */
-        public static final int tv_title_welcome=0x7f070016;
-        public static final int ui_plv_footer_hint_no_more=0x7f07000f;
-        public static final int ui_plv_footer_hint_normal=0x7f07000e;
-        public static final int ui_plv_footer_hint_ready=0x7f070010;
-        public static final int ui_plv_header_hint_loading=0x7f07000c;
-        public static final int ui_plv_header_hint_normal=0x7f07000a;
-        public static final int ui_plv_header_hint_ready=0x7f07000b;
-        public static final int ui_plv_header_last_time=0x7f07000d;
+        public static final int tv_title_welcome=0x7f070013;
+        public static final int ui_plv_footer_hint_no_more=0x7f07000c;
+        public static final int ui_plv_footer_hint_normal=0x7f07000b;
+        public static final int ui_plv_footer_hint_ready=0x7f07000d;
+        public static final int ui_plv_header_hint_loading=0x7f070009;
+        public static final int ui_plv_header_hint_normal=0x7f070007;
+        public static final int ui_plv_header_hint_ready=0x7f070008;
+        public static final int ui_plv_header_last_time=0x7f07000a;
     }
     public static final class style {
         /** 

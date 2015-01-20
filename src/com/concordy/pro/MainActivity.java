@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.Window;
 
+import com.concordy.pro.R;
 import com.concordy.pro.fragment.HomeFragment;
 
 public class MainActivity extends FragmentActivity {
