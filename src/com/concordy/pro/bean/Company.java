@@ -1,8 +1,6 @@
 package com.concordy.pro.bean;
 
-import java.io.Serializable;
-
-public class Company implements Serializable{
+public class Company {
 
 
 	private int Id;

@@ -52,7 +52,6 @@ import android.widget.Toast;
 
 import com.concordy.pro.adapter.Itemadapter;
 import com.concordy.pro.bean.Bill;
-import com.concordy.pro.bean.Bill.Item;
 import com.concordy.pro.bean.Category;
 import com.concordy.pro.bean.HttpError;
 import com.concordy.pro.bean.Itemlist;
@@ -124,17 +123,18 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 	private Context context;
 	public final static int REQUEST_CODE_TAKE_PICTURE = 12;// 设置拍照操作的标志
 	protected String mUri;
+	private ArrayList<String> arrayList;
 	private List<Vendor> mVendorList;
 	private Itemadapter	mItemadapter;
 	private Bill mBill;
-	private Item billItem;
+	private Itemlist item;
 	private boolean isRecurring;
 	private Vendor mVendor;
 	private Category mCategory; 
 	private String mVenName,mVenId,name,price;
 	private int number;
 	private RecurringSetting rs;
-	private List<Item> items = new ArrayList<Item>();
+	private List<Itemlist> items = new ArrayList<Itemlist>();
 	private String url = ContentValue.NEWSERVER_URL + "/"
 			+ ContentValue.BILL_URL;
 	@Override
@@ -194,8 +194,11 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 				showVendor(cetVendor);
 			}
 		});
+		//将adapter 添加到spinner中
+		arrayList  = new ArrayList<String>();
+		arrayList.add("名称：");
 		//lvBillItem = (ListView) findViewById(R.id.lv_item_bill);
-		mItemadapter = new Itemadapter(this,items,new com.concordy.pro.adapter.Itemadapter.Delete() {
+		mItemadapter = new Itemadapter(this,arrayList,new com.concordy.pro.adapter.Itemadapter.Delete() {
 			@Override
 			public void delete(ArrayList<String> arr, int position) {
 				//arr.remove(position);
@@ -215,15 +218,6 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 	 */
 	private <T>void initData() {
 		//As
-		
-		Bundle bundle = getIntent().getExtras();
-		if(bundle!=null){
-			Bill bill = (Bill) bundle.get("bill");
-			LogUtils.d("bill:"+bill.toString());
-			if(bill!=null){
-				processBill(bill);
-			}
-		}
 		HttpUtils http = new HttpUtils();
 		RequestParams params = new RequestParams();
 		params.setHeader("authorization","bearer "+ SharedPreferencesUtils.getString(this,ContentValue.SPFILE_TOKEN, ""));
@@ -247,21 +241,6 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 			}
 		});
 	}
-	/***
-	 * 填充Bill 数据
-	 * 
-	 * */
-	private void processBill(Bill bill) {
-		if(bill.getVendor()!=null){
-			cetVendor.setText(bill.getVendor().getName());
-		}
-		cetDueDate.setText(bill.getDueDate().split("T")[0]);
-		cetBillDate.setText(bill.getBillDate().split("T")[0]);
-		if(bill.getItemList()!=null){
-			//mItemadapter.arr = bill.getItemList();
-			lvBillItem.setAdapter(mItemadapter);
-		}
-	}
 	/**
 	 * 解析vendor数据
 	 * @param result
@@ -276,7 +255,7 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 	 * 
 	 */
 	public void bill_value(Intent intent) { 
-		int length = mItemadapter.items.size();//listView的条数
+		int length = mItemadapter.arr.size();//listView的条数
 		for(int i = 0;i<length;i++){
 			LinearLayout content = (LinearLayout) lvBillItem.getChildAt(i);
 			EditText itemname = (EditText) content.findViewById(R.id.itemname);
@@ -288,8 +267,8 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 				number = Integer.valueOf(numberStr);				
 			}
 			price = itemprice.getText().toString();
-			billItem =new Item(name, number, price);
-			items.add(billItem);
+			item = new Itemlist(name,number,price);
+			items.add(item);
 		}
 		/*String bd = etBillDate.getText().toString();
 		int at =Integer.parseInt(etAmount.getText().toString());
@@ -301,7 +280,7 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 		mBill.setDueDate(cetDueDate.getText());
 		mBill.setVendor(mVendor);
 		mBill.setCategory(mCategory);
-		mBill.setItemList(items);
+		mBill.setItems(items);
 		if(null != intent){			
 			rs = (RecurringSetting) intent.getExtras().getSerializable("RS");
 			mBill.setRecurringSetting(rs);
@@ -342,7 +321,7 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 			startActivityForResult(intent, REQUEST_CODE_TAKE_PICTURE);
 			break;
 		case R.id.btn_add_bill_item:
-			mItemadapter.items.add(new Item()); 
+			mItemadapter.arr.add(""); 
 			mItemadapter.notifyDataSetChanged(); 
 			setListViewHeightBasedOnChildren(lvBillItem);
 			break;
@@ -519,6 +498,7 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 			return tv;
 		}
 	}
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);

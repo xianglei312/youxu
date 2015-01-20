@@ -24,14 +24,14 @@ import com.concordy.pro.manager.BaseApplication;
 import com.concordy.pro.utils.ContentValue;
 import com.concordy.pro.utils.IOUtils;
 import com.concordy.pro.utils.LogUtils;
-import com.concordy.pro.utils.SharedPreferencesUtils;
 import com.concordy.pro.utils.StringUtils;
 
 /**
  * @author Scleo
  */
 public class HttpHelper {
-	private final static String token = SharedPreferencesUtils.getString(BaseApplication.getApplication(), ContentValue.SPFILE_TOKEN, "");
+	private final static String token = BaseApplication.getToken();
+
 	/**
 	 * @param url
 	 *            访问get请求地址
