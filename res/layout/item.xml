@@ -4,33 +4,42 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-        <LinearLayout
-            android:layout_width="match_parent"
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/et_name_bill_item"
+            android:layout_width="0dip"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
-            <EditText
-                android:layout_weight="1"
-                android:id="@+id/itemname"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-              >
-            </EditText>
+            android:layout_weight="1" >
+        </EditText>
 
-            <EditText
-                android:layout_weight="1"
-                android:id="@+id/et_bill_item"
-               android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                 >
-            </EditText>
+        <EditText
+            android:id="@+id/et_num_bill_item"
+            android:layout_width="0dip"
+            android:inputType="numberSigned"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" >
+        </EditText>
 
-            <EditText
-                android:id="@+id/itemprice"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10" >
-            </EditText>
-            
-        </LinearLayout>
+        <EditText
+            android:id="@+id/et_price_bill_item"
+            android:inputType="numberDecimal"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10" >
+        </EditText>
+
+        <ImageView
+            android:id="@+id/iv_del_bill_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/item_del_normal" />
+    </LinearLayout>
+
 </LinearLayout>

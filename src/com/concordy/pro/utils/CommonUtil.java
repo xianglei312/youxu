@@ -1,18 +1,23 @@
 package com.concordy.pro.utils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -26,7 +31,11 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
+import android.os.Environment;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
@@ -39,7 +48,6 @@ import com.google.gson.Gson;
  * @author Scleo
  *
  */
-@SuppressLint({ "DefaultLocale", "SimpleDateFormat" })
 public class CommonUtil {
 	/**
 	 * Dialog显示框
@@ -87,7 +95,6 @@ public class CommonUtil {
 	 * @param b
 	 * @return
 	 */
-	@SuppressLint("DefaultLocale")
 	public static String byteToHexString(byte[] b) {
 		StringBuffer hexString = new StringBuffer();
 		for (int i = 0; i < b.length; i++) {
@@ -250,6 +257,14 @@ public class CommonUtil {
 	}
 	
 	/**
+	 * 通知服务器，发送短信验证码到指定号码
+	 *//*
+	public static String noticeSMSCode(String number) {
+		String url = ContentValue.SERVER_URI+"/"+ContentValue.VERICAL_REQUEST;
+		NetUtils net = new NetUtils();
+		return net.doPostOfHttpClientFor(url, "="+number);
+	}*/
+	/**
 	 * 将对象转换成json字符串
 	 * @param t bean对象
 	 * @return
@@ -356,5 +371,40 @@ public class CommonUtil {
 				return 0;
 			}
 		});
+	}
+	/****
+	 * 获取图片
+	 * @param txt 
+	 * @param key 
+	 * @param data 
+	 * @return 
+	 */
+	public static Bitmap getBitmap(Context txt,String key,Intent data) {
+		if (!FileUtils.isSDCardAvailable()) { // 检测sd是否可用  
+			Log.i("TestFile",  
+					"SD card is not avaiable/writeable right now.");  
+			PromptManager.showToast(txt, "SdCard 不可用");
+			return null;  
+		}  
+		String fileName = new DateFormat().format("yyyyMMdd_hhmmss",Calendar.getInstance(Locale.CHINA)) + ".jpg";     
+		Bundle bundle = data.getExtras();  
+		Bitmap bitmap = (Bitmap) bundle.get(key);// 获取相机返回的数据，并转换为Bitmap图片格式  
+		FileOutputStream b = null;  
+		File file = new File(FileUtils.getExternalStoragePath(),fileName);  
+		file.mkdirs();// 创建文件夹  
+		try {  
+			b = new FileOutputStream(file);  
+			bitmap.compress(Bitmap.CompressFormat.JPEG, 100, b);// 把数据写入文件  
+		} catch (FileNotFoundException e) {  
+			e.printStackTrace();  
+		} finally {  
+			try {  
+				b.flush();  
+				b.close();  
+			} catch (IOException e) {  
+				e.printStackTrace();  
+			}  
+		}
+		return bitmap;
 	}
 }

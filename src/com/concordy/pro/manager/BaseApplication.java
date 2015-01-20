@@ -59,11 +59,4 @@ public class BaseApplication extends Application {
 		// TODO Auto-generated method stub
 		super.onLowMemory();
 	}
-	private static String mToken;
-	public static String getToken() {
-		return mToken;
-	}
-	public static void setToken(String token) {
-		mToken = token;
-	} 
 }

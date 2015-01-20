@@ -1,30 +1,37 @@
 package com.concordy.pro.bean;
 
+import java.io.Serializable;
 import java.util.List;
 /*****
  * @author Scleo
  */
-public class Bill {
+public class Bill implements Serializable {
 	private String id ;
 	private	String billDate;
 	private Category category;
 	private String createOn;
 	private String description;
 	private String dueDate;
-	private int amount;
-	private List<Itemlist> items;
+	private float amount;
+	private List<Item> items;
 	private String lastUpdatedOn;
 	private int status;
 	private Vendor vendor;
 	private RecurringSetting recurringSetting;
-
-	public class Item{
+	
+	public List<Item> getItems() {
+		return items;
+	}
+	public void setItems(List<Item> items) {
+		this.items = items;
+	}
+	public static class Item implements Serializable{
 		private String billId;
 		private String id;
 		private String name;
-		private int pricePerUnit;
+		private String pricePerUnit;
 		private int quantity;
-		private int total;
+		private float total;
 		public String getBillId() {
 			return billId;
 		}
@@ -43,10 +50,10 @@ public class Bill {
 		public void setName(String name) {
 			this.name = name;
 		}
-		public int getPricePerUnit() {
+		public String getPricePerUnit() {
 			return pricePerUnit;
 		}
-		public void setPricePerUnit(int pricePerUnit) {
+		public void setPricePerUnit(String pricePerUnit) {
 			this.pricePerUnit = pricePerUnit;
 		}
 		public int getQuantity() {
@@ -55,7 +62,7 @@ public class Bill {
 		public void setQuantity(int quantity) {
 			this.quantity = quantity;
 		}
-		public int getTotal() {
+		public float getTotal() {
 			return total;
 		}
 		public void setTotal(int total) {
@@ -63,7 +70,7 @@ public class Bill {
 		}
 
 		public Item(){}
-		public Item(String billId, String id, String name, int pricePerUnit,
+		public Item(String billId, String id, String name, String pricePerUnit,
 				int quantity, int total) {
 			super();
 			this.billId = billId;
@@ -72,6 +79,11 @@ public class Bill {
 			this.pricePerUnit = pricePerUnit;
 			this.quantity = quantity;
 			this.total = total;
+		}
+		public Item(String name, int number, String price) {
+			this.name = name;
+			this.pricePerUnit = price;
+			this.quantity  = number;
 		}
 		@Override
 		public String toString() {
@@ -85,43 +97,6 @@ public class Bill {
 	}
 
 	public Bill(){};
-
-
-	public Bill(String id, String billDate, Category category,
-			String createOn, String description, String dueDate,
-			boolean isRecurring, List<Itemlist> items, String lastUpdatedOn,
-			int status, Vendor vendor,int amount,RecurringSetting recurringSetting) {
-		super();
-		this.id = id;
-		this.billDate = billDate;
-		this.category = category;
-		this.createOn = createOn;
-		this.description = description;
-		this.dueDate = dueDate;
-		this.items = items;
-		this.lastUpdatedOn = lastUpdatedOn;
-		this.status = status;
-		this.vendor = vendor;
-		this.amount = amount;
-		this.recurringSetting = recurringSetting;
-	}
-	public Bill(String billDate, Category category,
-			String createOn, String description, String dueDate,
-			boolean isRecurring, List<Itemlist> items, String lastUpdatedOn,
-			int status, Vendor vendor,int amount,RecurringSetting recurringSetting) {
-		super();
-		this.billDate = billDate;
-		this.category = category;
-		this.createOn = createOn;
-		this.description = description;
-		this.dueDate = dueDate;
-		this.items = items;
-		this.lastUpdatedOn = lastUpdatedOn;
-		this.status = status;
-		this.vendor = vendor;
-		this.amount = amount;
-		this.recurringSetting = recurringSetting;
-	}
 	public Bill(String billDate, int amount,String dueDate) {
 		super();
 		this.billDate = billDate;
@@ -142,10 +117,10 @@ public class Bill {
 	}
 
 
-	public int getAmount() {
+	public float getAmount() {
 		return amount;
 	}
-	public void setAmount(int amount) {
+	public void setAmount(float amount) {
 		this.amount = amount;
 	}
 
@@ -184,14 +159,6 @@ public class Bill {
 	}
 	public void setDueDate(String dueDate) {
 		this.dueDate = dueDate;
-	}
-
-
-	public List<Itemlist> getItems() {
-		return items;
-	}
-	public void setItems(List<Itemlist> items) {
-		this.items = items;
 	}
 	public String getLastUpdatedOn() {
 		return lastUpdatedOn;

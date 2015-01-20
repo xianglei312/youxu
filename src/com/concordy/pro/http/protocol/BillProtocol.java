@@ -13,6 +13,7 @@ public class BillProtocol extends BaseProtocol<Bills> {
 
 	@Override
 	protected Bills parseFromJson(int flag,String json) {
+		LogUtils.d("code"+getCode()+",解析bill数据："+getJson());
 		if (getCode() == 200||flag==BaseProtocol.GET_DATA){
 			try {
 				return CommonUtil.json2Bean(json, Bills.class);
@@ -31,7 +32,6 @@ public class BillProtocol extends BaseProtocol<Bills> {
 
 	@Override
 	public HttpError getHttpError() {
-		LogUtils.d("code"+getCode()+"服务器出错了："+getJson());
 		try{
 			return CommonUtil.json2Bean(getJson(), HttpError.class);
 		}catch(Exception e){

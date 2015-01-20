@@ -1,10 +1,13 @@
 package com.concordy.pro.bean;
 
-public class Category{
+import java.io.Serializable;
+
+public class Category implements Serializable{
 	private String id;
 	private String name;
 	private String parentId;
-		
+	public Category(){
+	}
 	public Category(String id, String name, String parentId) {
 		super();
 		this.id = id;

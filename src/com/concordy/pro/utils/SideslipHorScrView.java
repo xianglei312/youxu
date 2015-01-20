@@ -30,7 +30,6 @@ public class SideslipHorScrView extends FrameLayout {
 
     private final Rect mTempRect = new Rect();
     private Scroller mScroller;
-
     /**
      * Flag to indicate that we are moving focus ourselves. This is so the
      * code that watches for focus changes initiated outside this ScrollView

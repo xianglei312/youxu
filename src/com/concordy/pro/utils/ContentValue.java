@@ -5,6 +5,7 @@ package com.concordy.pro.utils;
  */
 public abstract class ContentValue {
 	public static final int SOCKET_TIMEOUT = 10000;
+	public static final int ERROR_SOCKET_TIMEOUT = 10000;
 	//Sp文件中记录是否已登录
 	public static final String SPFILE_TOKEN = "auth_token";
 	public static final String SPFILE_PIN = "pincode";
@@ -18,6 +19,8 @@ public abstract class ContentValue {
 	public static String NEWSERVER_URL = "http://concordyaapi.chinacloudsites.cn/api";
 	/****** BillAPI地址 **********/
 	public static String BILL_URL = "bill";
+	public static String URI_CATEGORY = "category";
+	public static String URI_VENDOR = "vendor";
 	public static String SERVER_URL = "http://concordyaapi.chinacloudsites.cn/api";
 	public static String SERVER_URI = "http://concordyaapi.chinacloudsites.cn/api";
 	public static String REGIST_URI = "account/register";
@@ -25,7 +28,7 @@ public abstract class ContentValue {
 	public static String VERICAL_PHONE = "phone";
 	public static String BILL_GETALL = "bill";
 	public static String TOKEN_URI = "token";
-	public static String LOGIN_URI = "account/Login";
+	public static String URI_LOGIN = "account/login";
 	/*****************http参数***********************/
 	public static final String AUTHORIZATION = "authorization";
 	public static final String CONTENT_TYPE = "Content-Type";

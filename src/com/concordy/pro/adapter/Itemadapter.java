@@ -1,48 +1,44 @@
 package com.concordy.pro.adapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Context;
-import android.util.Log;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 import com.concordy.pro.R;
-import com.concordy.pro.utils.SideslipHorScrView;
-public class Itemadapter extends BaseAdapter{
-
+import com.concordy.pro.bean.Bill.Item;
+import com.concordy.pro.utils.LogUtils;
+import com.concordy.pro.utils.StringUtils;
+public class Itemadapter extends BaseAdapter {
+	private final int NAME =0 ;
+	private final int NUM =1 ;
+	private final int PRICE =2 ;
+	private ViewHolder holder;
 	private LayoutInflater mInflater;
-	public ArrayList<String> arr;
-	private Context mContext;
-	private Delete delete;
+	public List<Item> items;
+	private Item item;
 	
-	public Itemadapter(Context context,ArrayList<String> arr,com.concordy.pro.adapter.Itemadapter.Delete delete2) {  
+	public Itemadapter(Context context,List<Item> arr,com.concordy.pro.adapter.Itemadapter.Delete delete2) {  
 		super(); 
-		this.delete = delete2;
-		this.mContext = context;  
 		mInflater = LayoutInflater.from(context);
-		this.arr = arr;
-		arr = new ArrayList<String>();  
-		for(int i=0;i<arr.size();i++){    //listview初始化
-			arr.add("");  
-		}  
+		this.items = arr;
 	}  
-
-
 	@Override
 	public int getCount() {
-		return arr.size();
+		return items.size();
 	}
 
 	@Override
 	public Object getItem(int position) {
-		return arr.get(position) ;
+		return items.get(position) ;
 	}
 
 	@Override
@@ -51,88 +47,37 @@ public class Itemadapter extends BaseAdapter{
 	}
 
 	public View getView(final int position, View convertView, ViewGroup parent) {
-		// TODO Auto-generated method stub
-		
-		final ViewHolder holder;
-	
+		item = items.get(position);
 		if(convertView == null){
 			holder = new ViewHolder();
-
 			//把vlist layout转换成View【LayoutInflater的作用】
 			convertView = mInflater.inflate(R.layout.item, null);
 			//通过上面layout得到的view来获取里面的具体控件
 			//holder.sideslipHorScrView = (SideslipHorScrView) convertView.findViewById(R.id.sideslipHorScrView);
-			holder.itemname =  (EditText) convertView.findViewById(R.id.itemname);
-			holder.itemnumber =  (EditText) convertView.findViewById(R.id.et_bill_item);
-			
-			holder.itemprice =  (EditText) convertView.findViewById(R.id.itemprice);
-			//holder.delete = (Button)convertView.findViewById(R.id.deleteitem);
-
+			holder.itemname =  (EditText) convertView.findViewById(R.id.et_name_bill_item);
+			holder.itemnumber =  (EditText) convertView.findViewById(R.id.et_num_bill_item);
+			holder.itemprice =  (EditText) convertView.findViewById(R.id.et_price_bill_item);
+			holder.delete = (ImageView)convertView.findViewById(R.id.iv_del_bill_item);
 			convertView.setTag(holder);
 		}
 		else{
 			holder = (ViewHolder) convertView.getTag();
 		}
-		
-		holder.itemname.setHint(arr.get(position));
-		
-		holder.itemname.setOnFocusChangeListener(new OnFocusChangeListener() {  
-			@Override  
-			public void onFocusChange(View v, boolean hasFocus) {  
-				// TODO Auto-generated method stub  
-				if(arr.size()>0){  
-					arr.set(position, holder.itemname.getText().toString());  
-				}  
-			}  
-		});  
-		
-		//这里testData.get(position).get("title1"))，其实就是从list集合(testData)中取出对应索引的map，然后再根据键值对取值
-//		edittext.setHint("项目：");
-		
-		holder.itemname.setOnClickListener(new OnClickListener() {
-			
+		if(item!=null){
+			holder.itemname.setText(item.getName());
+			holder.itemnumber.setText(item.getQuantity()+"");
+			holder.itemprice.setText(item.getPricePerUnit());
+		}
+		holder.itemname.addTextChangedListener(new MyEditViewChanged(NAME));
+		holder.itemnumber.addTextChangedListener(new MyEditViewChanged(NUM));
+		holder.itemprice.addTextChangedListener(new MyEditViewChanged(PRICE));
+		holder.delete.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				holder.itemname.getText().toString().trim();
-				
-			}
-		});
-		holder.itemnumber.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				holder.itemnumber.getText().toString().trim();
-				
-			}
-		});
-		holder.itemprice.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				holder.itemprice.getText().toString().trim();
-				
-			}
-		});
-
-
-		/*holder.delete.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-
-				Log.i("xfx", "button监听" + "  arg0=" + position );
-
-				arr.remove(position);
+				items.remove(position);
 				notifyDataSetChanged();
-				holder.sideslipHorScrView.scrollTo(0, 0);
-				delete.delete(arr, position);
-
 			}
-		});*/
+		});
 
 
 		return convertView;
@@ -140,14 +85,51 @@ public class Itemadapter extends BaseAdapter{
 
 	class ViewHolder{
 		private EditText itemname,itemnumber,itemprice;
-		private Button delete;
-		private SideslipHorScrView sideslipHorScrView;
-		private LinearLayout linearlayout;
-
+		private ImageView delete;
 	}
 	
 	public interface Delete{
 		void delete(ArrayList<String> arr,int position);
 	}
+	class MyEditViewChanged implements TextWatcher{
+		private String result = "";
+		private int flag;
+		public MyEditViewChanged(int flag) {
+			this.flag = flag;
+		}
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count,
+				int after) {
+		}
 
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before,
+				int count) {
+			LogUtils.d("s:"+s);
+			if(s!=null&&!"".equals(s)){
+				result = s.toString();
+				//LogUtils.d("s:"+s);
+			}
+		}
+		@Override
+		public void afterTextChanged(Editable s) {
+			LogUtils.d("item输入结束："+result);
+			if(item!=null){
+				switch (flag) {
+					case NAME:
+						item.setName(result);
+						break;
+					case NUM:
+						if(StringUtils.isEmpty(result))
+							item.setQuantity(0);
+						else
+							item.setQuantity(Integer.parseInt(result.trim()));
+						break;
+					case PRICE:
+						item.setPricePerUnit(result);
+						break;
+				}
+			}
+		}
+	}
 }

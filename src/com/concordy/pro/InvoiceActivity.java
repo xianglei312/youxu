@@ -1,31 +1,20 @@
 package com.concordy.pro;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
-import android.text.TextUtils;
-import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -52,13 +41,15 @@ import android.widget.Toast;
 
 import com.concordy.pro.adapter.Itemadapter;
 import com.concordy.pro.bean.Bill;
+import com.concordy.pro.bean.Bill.Item;
 import com.concordy.pro.bean.Category;
 import com.concordy.pro.bean.HttpError;
-import com.concordy.pro.bean.Itemlist;
 import com.concordy.pro.bean.RecurringSetting;
 import com.concordy.pro.bean.Vendor;
 import com.concordy.pro.http.HttpHelper;
 import com.concordy.pro.http.HttpHelper.HttpResult;
+import com.concordy.pro.http.protocol.BaseProtocol;
+import com.concordy.pro.http.protocol.CategoryProtocol;
 import com.concordy.pro.ui.widget.CalendarView;
 import com.concordy.pro.ui.widget.CalendarView.OnDateClickListener;
 import com.concordy.pro.ui.widget.CustomerEditText;
@@ -80,7 +71,7 @@ import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.lidroid.xutils.view.annotation.ViewInject;
 
-public class InvoiceActivity extends Activity implements OnClickListener,OnCheckedChangeListener{
+public class InvoiceActivity extends BaseBillActivity implements OnClickListener,OnCheckedChangeListener{
 	//注解初始化控件
 	@ViewInject(R.id.iv_camera_bill)
 	private ImageView ivCamera;
@@ -123,18 +114,16 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 	private Context context;
 	public final static int REQUEST_CODE_TAKE_PICTURE = 12;// 设置拍照操作的标志
 	protected String mUri;
-	private ArrayList<String> arrayList;
 	private List<Vendor> mVendorList;
+	private List<Category> mCateList;
 	private Itemadapter	mItemadapter;
 	private Bill mBill;
-	private Itemlist item;
 	private boolean isRecurring;
 	private Vendor mVendor;
 	private Category mCategory; 
-	private String mVenName,mVenId,name,price;
-	private int number;
 	private RecurringSetting rs;
-	private List<Itemlist> items = new ArrayList<Itemlist>();
+	private List<Item> items;
+	private String billId;
 	private String url = ContentValue.NEWSERVER_URL + "/"
 			+ ContentValue.BILL_URL;
 	@Override
@@ -151,10 +140,9 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 	 * 初始化控件
 	 */
 	private void init() {
-		initData();
+		initDa();
 		context = this;
 		isRecurring = false;
-		mCategory = new Category("9607ea59-ea15-45cf-b7ca-bb4a39117d64", "Cat 3", "");
 		btnSubBill.setOnClickListener(this);
 		cbRecurring.setOnCheckedChangeListener(this);
 		btnShowHide.setOnClickListener(this);
@@ -164,9 +152,7 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 		cetBillDate.setOnViewClickListener(new AutoEditTextListener() {
 			@Override
 			public void onEditChanged() {
-				
 			}
-			
 			@Override
 			public void onBtnClick() {
 				showCalendor(cetBillDate);
@@ -175,9 +161,7 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 		cetDueDate.setOnViewClickListener(new AutoEditTextListener() {
 			@Override
 			public void onEditChanged() {
-				
 			}
-			
 			@Override
 			public void onBtnClick() {
 				showCalendor(cetDueDate);
@@ -186,7 +170,6 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 		cetVendor.setOnViewClickListener(new AutoEditTextListener() {
 			@Override
 			public void onEditChanged() {
-				
 			}
 			
 			@Override
@@ -194,21 +177,18 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 				showVendor(cetVendor);
 			}
 		});
-		//将adapter 添加到spinner中
-		arrayList  = new ArrayList<String>();
-		arrayList.add("名称：");
-		//lvBillItem = (ListView) findViewById(R.id.lv_item_bill);
-		mItemadapter = new Itemadapter(this,arrayList,new com.concordy.pro.adapter.Itemadapter.Delete() {
+		/*//lvBillItem = (ListView) findViewById(R.id.lv_item_bill);
+		mItemadapter = new Itemadapter(this,items,new com.concordy.pro.adapter.Itemadapter.Delete() {
 			@Override
 			public void delete(ArrayList<String> arr, int position) {
 				//arr.remove(position);
 				mItemadapter.notifyDataSetChanged();
-				setListViewHeightBasedOnChildren(lvBillItem);
+			//setListViewHeightBasedOnChildren(lvBillItem);
 			}
 		}); 
 		lvBillItem.setAdapter(mItemadapter);
-		setListViewHeightBasedOnChildren(lvBillItem);
-		scrollView.smoothScrollTo(0,0);  
+		//setListViewHeightBasedOnChildren(lvBillItem);
+		scrollView.smoothScrollTo(0,0); */ 
 		//btnDrop.setOnClickListener(this);
 		//if(mVendorAdapter!=null)
 		//actvVendor.setEnabled(false);
@@ -216,8 +196,35 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 	/***
 	 * 初始化数据
 	 */
-	private <T>void initData() {
+	private <T>void initDa() {
 		//As
+		Bundle bundle = getIntent().getExtras();
+		if(bundle!=null){
+			Bill bill = (Bill) bundle.get("bill");
+			LogUtils.d("bill:"+bill.toString());
+			if(bill!=null){
+				processBill(bill);
+			}
+		}else{
+			items = new ArrayList<Item>();
+		}
+		getVendors();
+		getCategory();
+	}
+	private void getCategory() {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				CategoryProtocol cp = new CategoryProtocol();
+				mCateList = cp.load(BaseProtocol.GET_DATA,ContentValue.SERVER_URI+"/"+ContentValue.URI_CATEGORY, ContentValue.APPLICATION_JSON);
+				//LogUtils.d("category:"+mCateList.toString());
+			}
+		}).start();
+	}
+	/**
+	 * 获取Vendors 
+	 * */
+	private void getVendors() {
 		HttpUtils http = new HttpUtils();
 		RequestParams params = new RequestParams();
 		params.setHeader("authorization","bearer "+ SharedPreferencesUtils.getString(this,ContentValue.SPFILE_TOKEN, ""));
@@ -232,7 +239,7 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 			@Override
 			public void onSuccess(ResponseInfo<String> info) {
 				if(info.statusCode==200){
-					parseData(info.result);
+					mVendorList= parseData(info.result,Vendor.class);
 				}else{
 					HttpError httpError = CommonUtil.json2Bean(info.result, HttpError.class);
 					PromptManager.showToast(getApplicationContext(), httpError.getErrorMsg());
@@ -241,44 +248,53 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 			}
 		});
 	}
+	/***
+	 * 填充Bill 数据
+	 * 
+	 * */
+	private void processBill(Bill bill) {
+		billId = bill.getId();
+		if(bill.getVendor()!=null){
+			mVendor = bill.getVendor();
+			cetVendor.setText(bill.getVendor().getName());
+		}
+		String amount = bill.getAmount()+"";
+		etAmount.setText(amount.trim());
+		cetDueDate.setText(bill.getDueDate().split("T")[0]);
+		cetBillDate.setText(bill.getBillDate().split("T")[0]);
+		if(bill.getItems()!=null){
+			items = bill.getItems();
+			mItemadapter = new Itemadapter(this, items, null);
+			lvBillItem.setAdapter(mItemadapter);
+		}
+		if(bill.getCategory()!=null){
+			mCategory = bill.getCategory();
+		}
+	}
 	/**
 	 * 解析vendor数据
+	 * @param <T>
 	 * @param result
 	 */
-	protected void parseData(String result) {
+	protected <T> List<T> parseData(String result,Class<T> clz) {
 		LogUtils.d("result:"+result);
 		Gson gson = new Gson();
-		mVendorList = gson.fromJson(result, new TypeToken<ArrayList<Vendor>>(){}.getType());
-		LogUtils.d("vendorlist:"+mVendorList);
+		//mVendorList = 
+		//LogUtils.d("vendorlist:"+mVendorList);
+		return gson.fromJson(result, new TypeToken<ArrayList<T>>(){}.getType());
 	}
 	/**
 	 * 
 	 */
 	public void bill_value(Intent intent) { 
-		int length = mItemadapter.arr.size();//listView的条数
-		for(int i = 0;i<length;i++){
-			LinearLayout content = (LinearLayout) lvBillItem.getChildAt(i);
-			EditText itemname = (EditText) content.findViewById(R.id.itemname);
-			EditText itemnumber = (EditText) content.findViewById(R.id.et_bill_item);
-			EditText itemprice = (EditText) content.findViewById(R.id.itemprice);
-			name = itemname.getText().toString();
-			String numberStr = itemnumber.getText().toString();
-			if(!TextUtils.isEmpty(numberStr)){
-				number = Integer.valueOf(numberStr);				
-			}
-			price = itemprice.getText().toString();
-			item = new Itemlist(name,number,price);
-			items.add(item);
-		}
-		/*String bd = etBillDate.getText().toString();
-		int at =Integer.parseInt(etAmount.getText().toString());
-		String dd = etDueDate.getText().toString();*/
-		//mBill = new Bill(bd,at,dd);
-		mBill = new Bill();
+		if(mBill==null)
+			mBill = new Bill();
 		mBill.setBillDate(cetBillDate.getText());
-		mBill.setAmount(Integer.parseInt(etAmount.getText().toString()));
+		mBill.setAmount(Float.parseFloat(etAmount.getText().toString().trim()));
 		mBill.setDueDate(cetDueDate.getText());
 		mBill.setVendor(mVendor);
+		if(mCateList!=null)
+			mCategory = mCateList.get(0); 
 		mBill.setCategory(mCategory);
 		mBill.setItems(items);
 		if(null != intent){			
@@ -290,27 +306,6 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 			mBill.setRecurringSetting(rs);
 		}
 	};
-	public void setListViewHeightBasedOnChildren(ListView listView) {
-		// 获取listview的适配器
-		ListAdapter listAdapter = listView.getAdapter();
-		if (listAdapter == null) {
-			// pre-condition
-			return;
-		}
-		int totalHeight = 0;
-		for (int i = 0; i < listAdapter.getCount(); i++) {
-			View listItem = listAdapter.getView(i, null, listView);
-			listItem.measure(MeasureSpec.makeMeasureSpec(getResources()
-					.getDisplayMetrics().widthPixels, MeasureSpec.EXACTLY), 0);
-			totalHeight += listItem.getMeasuredHeight();
-		}
-
-		ViewGroup.LayoutParams params = listView.getLayoutParams();
-		params.height = totalHeight
-				+ (listView.getDividerHeight() * (listAdapter.getCount() - 1));
-		listView.setLayoutParams(params);
-	}
-
 	@Override
 	public void onClick(View v) {
 
@@ -321,7 +316,7 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 			startActivityForResult(intent, REQUEST_CODE_TAKE_PICTURE);
 			break;
 		case R.id.btn_add_bill_item:
-			mItemadapter.arr.add(""); 
+			mItemadapter.items.add(new Item()); 
 			mItemadapter.notifyDataSetChanged(); 
 			setListViewHeightBasedOnChildren(lvBillItem);
 			break;
@@ -334,15 +329,6 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 			//jump();
 			save_addbill();
 			break;
-		/*case R.id.btn_custom_auto:
-			//
-			showVendor();
-			break;
-		case R.id.btn_calendor_bill:
-			//
-			//showCalendor();
-			break;*/
-
 		default:
 			break;
 		}
@@ -403,7 +389,7 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 						}
 					}
 				});
-				/*//设置控件监听，可以监听到点击的每一天（大家也可以在控件中根据需求设定）
+				/*//设置控件监听，可以监听到点击的每一天
 				calendar.setOnItemClickListener(new OnItemClickListener() {
 					@Override
 					public void OnItemClick(Date selectedStartDate,
@@ -421,11 +407,30 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 	 * 显示Vendor
 	 */
 	private void showVendor(final View parentView) {
+		/*if(mVendorList==null){
+			PromptManager.showToast(this, "未找到Vendor");
+			return;
+		}*/
 		//Toast.makeText(this, "右边按钮", 0).show();
 		View view = View.inflate(this, R.layout.ui_pop_item, null);
+		TextView tv = (TextView) view.findViewById(R.id.tv_pop_item_add);
+		tv.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				PromptManager.showToast(InvoiceActivity.this, "添加Vendor");
+				dismissPop(mPopVendor);
+				return ;
+			}
+		});
 		ListView lv = (ListView) view.findViewById(R.id.lv);
-		if(mVendorAdapter==null)
+		if(mVendorAdapter==null){
+			if(mVendorList ==  null){
+				mVendorList = new ArrayList<Vendor>();
+				mVendorList.add(new Vendor("", "供应商"));
+			}
+			LogUtils.d("vendorList:"+mVendorList);
 			mVendorAdapter = new VendorAdapter(this,mVendorList);
+		}
 		lv.setAdapter(mVendorAdapter);
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -465,74 +470,55 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 		pop = null;
 	}
 	class VendorAdapter extends BaseAdapter{
-		private List<Vendor> mVendors;
+		private List<Vendor> vendorList;
 		private Context ct;
-		public VendorAdapter(Context ct,List<Vendor> vendors){
-			this.mVendors = vendors;
+		public VendorAdapter(Context ct,List<Vendor> result){
+			LogUtils.d("vendorAdapter:"+result);
+			this.vendorList = result;
 			this.ct = ct;
 		}
 		@Override
 		public int getCount() {
-			return mVendors.size();
+			return vendorList.size();
 		}
-
 		@Override
 		public Object getItem(int position) {
-			return mVendors.get(position);
+			return vendorList.get(position);
 		}
-
 		@Override
 		public long getItemId(int position) {
 			return 0;
 		}
-
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
+			LogUtils.d("vendor:"+vendorList);
+			Vendor vendor = vendorList.get(position);
 			TextView tv;
 			if(convertView ==null){
 				tv = new TextView(ct); 
 			}else{
 				tv = (TextView) convertView;
 			}
-			tv.setText(mVendors.get(position).getName());
+			LogUtils.d("vendor:"+vendor);
+			LogUtils.d("name:"+vendor.getName());
+			//tv.setText(mVendors.get(position).getName());
 			return tv;
 		}
 	}
-
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		if(resultCode == 90 ){
-			bill_value(data);
+		if(requestCode == INTENT_RECURRING_FLAG ){
+			if(data==null)
+				return;
+			rs = (RecurringSetting) data.getSerializableExtra("");
+			if(mBill==null){
+				mBill = new Bill(); 
+			}
+			mBill.setRecurringSetting(rs);
 		}else if (resultCode == Activity.RESULT_OK) {  
-			String sdStatus = Environment.getExternalStorageState();  
-			if (!sdStatus.equals(Environment.MEDIA_MOUNTED)) { // 检测sd是否可用  
-				Log.i("TestFile",  
-						"SD card is not avaiable/writeable right now.");  
-				return;  
-			}  
-			String name = new DateFormat().format("yyyyMMdd_hhmmss",Calendar.getInstance(Locale.CHINA)) + ".jpg";     
-			Toast.makeText(this, name, Toast.LENGTH_LONG).show();  
-			Bundle bundle = data.getExtras();  
-			Bitmap bitmap = (Bitmap) bundle.get("data");// 获取相机返回的数据，并转换为Bitmap图片格式  
-
-			FileOutputStream b = null;  
-			File file = new File("/sdcard/myImage/");  
-			file.mkdirs();// 创建文件夹  
-			String fileName = "/sdcard/myImage/"+name;  
-			try {  
-				b = new FileOutputStream(fileName);  
-				bitmap.compress(Bitmap.CompressFormat.JPEG, 100, b);// 把数据写入文件  
-			} catch (FileNotFoundException e) {  
-				e.printStackTrace();  
-			} finally {  
-				try {  
-					b.flush();  
-					b.close();  
-				} catch (IOException e) {  
-					e.printStackTrace();  
-				}  
-			}  
+			//String name = new DateFormat().format("yyyyMMdd_hhmmss",Calendar.getInstance(Locale.CHINA)) + ".jpg";     
+			Bitmap bitmap = CommonUtil.getBitmap(context,"data", data);
 			ivShowBill.setImageBitmap(bitmap);// 将图片显示在ImageView里  
 		}
 	}
@@ -541,11 +527,10 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 	/**
 	 * 获取图片并压缩图片
 	 * @param imagePath
-	 */
+	 *//*
 	private Bitmap getImage(String imagePath) {
 		return BitmapFactory.decodeFile(imagePath);
-	}
-
+	}*/
 	private void save_addbill() {
 		LogUtils.d("isRecurring:"+isRecurring);
 		if(isRecurring){
@@ -555,11 +540,30 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 			addbill();
 		}
 	}
-
-
-
-	/**
-	 * 
+	/***
+	 * 设置listView高度
+	 * @param listView
+	 */
+	public void setListViewHeightBasedOnChildren(ListView listView) {
+		// 获取listview的适配器
+		ListAdapter listAdapter = listView.getAdapter();
+		if (listAdapter == null) {
+			return;
+		}
+		int totalHeight = 0;
+		for (int i = 0; i < listAdapter.getCount(); i++) {
+			View listItem = listAdapter.getView(i, null, listView);
+			listItem.measure(MeasureSpec.makeMeasureSpec(getResources()
+					.getDisplayMetrics().widthPixels, MeasureSpec.EXACTLY), 0);
+			totalHeight += listItem.getMeasuredHeight();
+		}
+		ViewGroup.LayoutParams params = listView.getLayoutParams();
+		params.height = totalHeight
+				+ (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+		listView.setLayoutParams(params);
+	}
+	/***
+	 * 发送Bill到服务器
 	 */
 	public void addbill() {
 		String json = CommonUtil.bean2Json(mBill);
@@ -567,7 +571,7 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 		new AsyncTask<String, Void, String>() {
 			@Override
 			protected String doInBackground(String... params) {
-				HttpResult result = HttpHelper.post(params[0], params[1],ContentValue.APPLICATION_JSON);
+				HttpResult result = HttpHelper.put(params[0], params[1],ContentValue.APPLICATION_JSON);
 				String str = null;
 				if(result!=null){
 					LogUtils.d("服务器响应码："+result.getCode());
@@ -592,15 +596,23 @@ public class InvoiceActivity extends Activity implements OnClickListener,OnCheck
 			}
 		}.execute(url, json);
 	}
-
 	@Override
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		System.out.println("选中状态:"+isChecked);
 		if(isChecked){   
 			isRecurring=true;
 			Intent intent = new Intent(context, RecurringInvoice.class);
-			startActivityForResult(intent, 21);//请求码为-1
+			startActivityForResult(intent, INTENT_RECURRING_FLAG);//请求码为-1
 		}
-
+	}
+	@Override
+	public void initData() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void inflatBill() {
+		// TODO Auto-generated method stub
+		
 	}
 }

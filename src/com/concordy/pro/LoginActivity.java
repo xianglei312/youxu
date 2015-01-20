@@ -1,5 +1,9 @@
 package com.concordy.pro;
 
+import java.io.UnsupportedEncodingException;
+
+import org.apache.http.entity.StringEntity;
+
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -22,7 +26,13 @@ import com.concordy.pro.utils.LogUtils;
 import com.concordy.pro.utils.PromptManager;
 import com.concordy.pro.utils.SharedPreferencesUtils;
 import com.concordy.pro.utils.StringUtils;
+import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.ViewUtils;
+import com.lidroid.xutils.exception.HttpException;
+import com.lidroid.xutils.http.RequestParams;
+import com.lidroid.xutils.http.ResponseInfo;
+import com.lidroid.xutils.http.callback.RequestCallBack;
+import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.lidroid.xutils.view.annotation.ViewInject;
 
 public class LoginActivity extends BaseTitleActivity implements OnClickListener {
@@ -75,10 +85,58 @@ public class LoginActivity extends BaseTitleActivity implements OnClickListener 
 					.getString(R.string.err_no_network));
 			return;
 		}
-		String url = ContentValue.SERVER_URL + "/" + ContentValue.LOGIN_URI;
+		String url = ContentValue.SERVER_URL + "/" + ContentValue.URI_LOGIN;
 		String json = CommonUtil.bean2Json(new User(etUsername.getText()
 				.toString(), etPwd.getText().toString()));
-		new LoginAsyncTask().execute(url, json);
+	/*	HttpUtils http = new HttpUtils();
+		RequestParams params = new RequestParams();
+		params.setHeader(ContentValue.CONTENT_TYPE,
+				ContentValue.APPLICATION_JSON);
+		params.setHeader(ContentValue.ACCEPT_TYPE,
+				ContentValue.APPLICATION_JSON);
+		StringEntity entity;
+		try {
+			entity = new StringEntity(json);
+			params.setBodyEntity(entity);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		http.send(HttpMethod.POST, url, params, new RequestCallBack<String>() {
+			
+			@Override
+			public void onLoading(long total, long current, boolean isUploading) {
+				super.onLoading(total, current, isUploading);
+			}
+
+			@Override
+			public void onStart() {
+				super.onStart();
+				showLoadDialog();
+			}
+			@Override
+			public void onFailure(HttpException arg0, String arg1) {
+				arg0.printStackTrace();
+				PromptManager.showToast(LoginActivity.this, arg1);
+				dismissDialog();
+			}
+			@Override
+			public void onSuccess(ResponseInfo<String> info) {
+				LogUtils.d("code:" + info.statusCode + ",result:" + info.result);
+				PromptManager.showToast(LoginActivity.this, "code:"
+						+ info.statusCode + "\n result:" + info.result);
+				dismissDialog(); 
+				if(info.statusCode==200){
+					User user = CommonUtil.json2Bean(info.result, User.class);
+					saveUserinfo(user);
+					Intent it = new Intent(ct, MainActivity.class);
+					it.putExtra("user", user);
+					startActivity(it);
+				}
+			}
+		});*/
+		 new LoginAsyncTask().execute(url, json);
+		// mLoginTask.execute(url, json);
+		 
 	}
 
 	/********** 登录成功存储User信息 ***********/
@@ -107,7 +165,6 @@ public class LoginActivity extends BaseTitleActivity implements OnClickListener 
 		mBtnRight.setOnClickListener(this);
 		mBtnLeft.setOnClickListener(this);
 	};
-
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();

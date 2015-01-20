@@ -3,15 +3,17 @@ package com.concordy.pro.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.SocketException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
 import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.AbstractHttpClient;
@@ -20,18 +22,19 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.SyncBasicHttpContext;
 import org.apache.http.util.EntityUtils;
 
+import com.concordy.pro.bean.HttpError;
 import com.concordy.pro.manager.BaseApplication;
 import com.concordy.pro.utils.ContentValue;
 import com.concordy.pro.utils.IOUtils;
 import com.concordy.pro.utils.LogUtils;
+import com.concordy.pro.utils.SharedPreferencesUtils;
 import com.concordy.pro.utils.StringUtils;
 
 /**
  * @author Scleo
  */
 public class HttpHelper {
-	private final static String token = BaseApplication.getToken();
-
+	private final static String token = SharedPreferencesUtils.getString(BaseApplication.getApplication(), ContentValue.SPFILE_TOKEN, "");
 	/**
 	 * @param url
 	 *            访问get请求地址
@@ -40,6 +43,8 @@ public class HttpHelper {
 	 * @return
 	 */
 	public static HttpResult get(String url, String type) {
+		
+		LogUtils.d("sp_token:" + SharedPreferencesUtils.getString(BaseApplication.getApplication(), ContentValue.SPFILE_TOKEN, ""));
 		LogUtils.d("token:" + token);
 		HttpGet httpGet = new HttpGet(url);
 		httpGet.setHeader(ContentValue.AUTHORIZATION, "bearer " + token);
@@ -48,12 +53,32 @@ public class HttpHelper {
 				ContentValue.APPLICATION_JSON);
 		return execute(url, httpGet);
 	}
-
+	
+	/** put请求，获取返回字符串内容 */
+	public static HttpResult put(String url, String json, String type) {
+		HttpPut httpPost = new HttpPut(url);
+		LogUtils.d("token........."+token);
+		httpPost.setHeader(ContentValue.AUTHORIZATION,"bearer "+ token);
+		httpPost.setHeader(ContentValue.CONTENT_TYPE, type);
+		httpPost.setHeader(ContentValue.ACCEPT_TYPE,
+				ContentValue.APPLICATION_JSON);
+		StringEntity strEntity;
+		try {
+			if (!StringUtils.isEmpty(json)) {
+				strEntity = new StringEntity(json, ContentValue.ENCODING);
+				httpPost.setEntity(strEntity);
+			}
+			return execute(url, httpPost);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 	/** post请求，获取返回字符串内容 */
 	public static HttpResult post(String url, String json, String type) {
 		HttpPost httpPost = new HttpPost(url);
-		// LogUtils.d("token........."+BaseApplication.getToken());
-		httpPost.setHeader(ContentValue.AUTHORIZATION, token);
+		LogUtils.d("token........."+token);
+		httpPost.setHeader(ContentValue.AUTHORIZATION,"bearer "+ token);
 		httpPost.setHeader(ContentValue.CONTENT_TYPE, type);
 		httpPost.setHeader(ContentValue.ACCEPT_TYPE,
 				ContentValue.APPLICATION_JSON);
@@ -87,24 +112,36 @@ public class HttpHelper {
 		AbstractHttpClient httpClient = HttpClientFactory.create(isHttps);
 		HttpContext httpContext = new SyncBasicHttpContext(
 				new BasicHttpContext());
-		HttpRequestRetryHandler retryHandler = httpClient
+	/*	HttpRequestRetryHandler retryHandler = httpClient
 				.getHttpRequestRetryHandler();// 获取重试机制
-		int retryCount = 0;
+		int retryCount = 0;*/
+		HttpResult result = null;
 		boolean retry = true;
 		while (retry) {
 			HttpResponse response;
 			try {
 				response = httpClient.execute(requestBase, httpContext);
 				if (response != null) {
-					return new HttpResult(response, httpClient, requestBase);
+					result = new HttpResult(response, httpClient, requestBase); 
+					return result;
 				}
-			} catch (Exception e) {
+			} catch (SocketException e) {
 				LogUtils.d("链接网络捕捉到异常了!");
-				e.printStackTrace();
+				/*HttpError error = new HttpError();
+				result = new HttpResult(error);
+				result.setErrorCode(ContentValue.ERROR_SOCKET_TIMEOUT);*/
+				return result;
+				/*e.printStackTrace();
 				IOException ioException = new IOException(e.getMessage());
 				// LogUtils.e(e.getMessage());
 				retry = retryHandler.retryRequest(ioException, ++retryCount,
-						httpContext);// 把错误异常交给重试机制，以判断是否需要采取从事
+						httpContext);*/// 把错误异常交给重试机制，以判断是否需要采取从事
+			} catch (ClientProtocolException e) {
+				e.printStackTrace();
+				return null;
+			} catch (IOException e) {
+				e.printStackTrace();
+				return null;
 			}
 		}
 		return null;
@@ -117,7 +154,21 @@ public class HttpHelper {
 		private String mStr;
 		private HttpClient mHttpClient;
 		private HttpRequestBase mRequestBase;
-
+		private HttpError error;
+		private int errorCode;
+		
+		public void setErrorCode(int errorCode) {
+			this.errorCode = errorCode;
+		}
+		public int getErrorCode() {
+			return errorCode;
+		}
+		public HttpResult(HttpError error){
+			this.error = error;
+		}
+		public HttpError getError(){
+			return error;
+		}
 		public HttpResult(HttpResponse response, HttpClient httpClient,
 				HttpRequestBase requestBase) {
 			mResponse = response;
@@ -130,7 +181,7 @@ public class HttpHelper {
 			StatusLine status = mResponse.getStatusLine();
 			return status.getStatusCode();
 		}
-
+		
 		/** 从结果中获取字符串，一旦获取，会自动关流，并且把字符串保存，方便下次获取 */
 		public String getString() {
 			if (!StringUtils.isEmpty(mStr)) {

@@ -20,6 +20,7 @@ public class FileUtils {
 	public static final String DOWNLOAD_DIR = "download";
 	public static final String CACHE_DIR = "cache";
 	public static final String ICON_DIR = "icon";
+	public static final String IMAGES_DIR = "images";
 
 	/** 判断SD卡是否挂载 */
 	public static boolean isSDCardAvailable() {
@@ -176,7 +177,15 @@ public class FileUtils {
 		sb.append(File.separator);
 		return sb.toString();
 	}
-	
+	/** 获取SD下的图片目录 */
+	public static String getImagesPath(){
+		StringBuilder sb = new StringBuilder();
+		sb.append(getExternalStoragePath());
+		sb.append(File.separator);
+		sb.append(IMAGES_DIR);
+		sb.append(File.separator);
+		return sb.toString();
+	}
 	/** 获取应用的cache目录 */
 	public static String getCachePath() {
 		File f = UIUtils.getContext().getCacheDir();

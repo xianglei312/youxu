@@ -1,6 +1,8 @@
 package com.concordy.pro.bean;
 
-public class Address {
+import java.io.Serializable;
+
+public class Address implements Serializable{
 	private int Id;
 	private boolean IsDefault;
 	private int AddressType;

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.sax.StartElementListener;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -30,6 +31,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.concordy.pro.AddBillActivity;
 import com.concordy.pro.InvoiceActivity;
 import com.concordy.pro.R;
 import com.concordy.pro.bean.Bill;
@@ -157,11 +159,6 @@ public class HomePager extends BasePager implements OnClickListener,
 			}
 			return null;
 		}else{
-			LogUtils.d("next:"+mCurrBill.getNext());
-			LogUtils.d("pre:"+mCurrBill.getPre());
-			LogUtils.d("counts:"+mCurrBill.getTotalCount());
-			LogUtils.d("pages:"+mCurrBill.getTotalPages());
-			LogUtils.d("bill:"+mCurrBill.getBills().toString());
 			return (T) mCurrBill.getBills();
 		}
 	}
@@ -184,7 +181,7 @@ public class HomePager extends BasePager implements OnClickListener,
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.bt_add_bill:
-			openBillDetail(null);
+			openBill(null);
 			break;
 		case R.id.btn_sort_amount:// 金额排序
 			CommonUtil.sortByAmount(mListBills, CURR_SORT);
@@ -297,13 +294,10 @@ public class HomePager extends BasePager implements OnClickListener,
 	 * 
 	 */
 	private class BillAdapter extends BaseAdapter{
-		private GestureDetector mGDetector;
 		private List<Bill> mBills;
-
 		public BillAdapter(Context ct, List<Bill> mListBills) {
 			this.mBills = mListBills;
 		}
-
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			MyHolder holder;
@@ -328,9 +322,11 @@ public class HomePager extends BasePager implements OnClickListener,
 				convertView.setTag(holder);
 			}
 			Bill bill = mBills.get(position);
-			holder.tvContent.setText(bill.getVendor().getName() );
-			holder.tvDate.setText(bill.getDueDate());
-			holder.tvMoney.setText(bill.getAmount() + "");
+			if(bill!=null){
+				holder.tvContent.setText(bill.getVendor().getName() );
+				holder.tvDate.setText(bill.getDueDate());
+				holder.tvMoney.setText(bill.getAmount() + "");
+			}
 			return convertView;
 		}
 
@@ -378,7 +374,6 @@ public class HomePager extends BasePager implements OnClickListener,
 		new AsyncTask<String, Void, T>(){
 			@Override
 			protected T doInBackground(String... params) {
-				// TODO Auto-generated method stub
 				BillProtocol bp = new BillProtocol();
 				//LogUtils.d("下一页地址："+mCurrBill.getNext());
 				mCurrBill = bp.load(BaseProtocol.GET_MOREDATA,mCurrBill.getNext(), ContentValue.APPLICATION_JSON);
@@ -415,22 +410,29 @@ public class HomePager extends BasePager implements OnClickListener,
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
+		LogUtils.d("第"+position+"个被点击了");
+		int index = position-1;
 		if(mListBills!=null){
-			Bill bill = mListBills.get(position);
+			Bill bill = mListBills.get(index);
 			LogUtils.d("bill:"+bill.toString());
-			openBillDetail(bill);
+			openBill(bill);
 		}
 		//LogUtils.d("第"+position+"个被点击了");
-		Toast.makeText(ct,"第"+position+"个被点击了",0).show();
+		
 	}
 	/**
 	 * 跳转到
 	 * @param bill
 	 */
-	private void openBillDetail(Bill bill) {
-		Intent intent = new Intent(ct, InvoiceActivity.class);
+	private void openBill(Bill bill) {
+		Intent intent = null ;
 		if(bill!=null){
-			
+			intent = new Intent(ct, InvoiceActivity.class);
+			Bundle b = new Bundle();
+			b.putSerializable("bill", bill);
+			intent.putExtras(b);
+		}else{
+			intent = new Intent(ct, AddBillActivity.class);
 		}
 		ct.startActivity(intent);
 	}
@@ -438,7 +440,6 @@ public class HomePager extends BasePager implements OnClickListener,
 	class ItemFlingTouchListener implements OnTouchListener{
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
-			// TODO Auto-generated method stub
 			return false;
 		}
 	}
