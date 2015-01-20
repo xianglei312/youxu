@@ -55,6 +55,8 @@
         </activity>
         <activity android:name="com.concordy.pro.PinSetActivity" >
         </activity>
+        <activity android:name="com.concordy.pro.AddBillActivity" >
+        </activity>
         <activity android:name="com.concordy.pro.CompanyInf"
                   android:label="@string/title_activity_company_inf" >
         </activity>
