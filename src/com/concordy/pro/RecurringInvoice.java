@@ -30,7 +30,6 @@ public class RecurringInvoice extends Activity implements OnClickListener{
 		setContentView(R.layout.activity_recurring_invoice);
 		init();
 	}
-
 	private void init() {
 		// TODO Auto-generated method stub
 		interval = (EditText) findViewById(R.id.Interval);
@@ -41,7 +40,6 @@ public class RecurringInvoice extends Activity implements OnClickListener{
 		spinner = (Spinner) findViewById(R.id.Spinner);
 		schedule = (Button) findViewById(R.id.schedulebtn);
 		schedule.setOnClickListener(this);
-		
 		//将可选内容与ArrayAdapter连接起来
 				adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,m); 
 				//设置下拉列表的风格
@@ -49,8 +47,7 @@ public class RecurringInvoice extends Activity implements OnClickListener{
 				//将adapter 添加到spinner中
 				spinner.setAdapter(adapter);
 				//添加事件Spinner事件监听  
-				spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-
+				/*spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 					@Override
 					public void onItemSelected(AdapterView<?> parent,
 							View view, int position, long id) {
@@ -58,13 +55,11 @@ public class RecurringInvoice extends Activity implements OnClickListener{
 						code = position+1;
 						
 					}
-
 					@Override
 					public void onNothingSelected(AdapterView<?> parent) {
 						// TODO Auto-generated method stub
-						
 					}
-				});
+				});*/
 				//设置默认值
 				spinner.setVisibility(View.VISIBLE);
 	}

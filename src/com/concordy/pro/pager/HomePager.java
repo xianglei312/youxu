@@ -32,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.concordy.pro.AddBillActivity;
+import com.concordy.pro.BaseBillActivity;
 import com.concordy.pro.InvoiceActivity;
 import com.concordy.pro.R;
 import com.concordy.pro.bean.Bill;
@@ -61,10 +62,6 @@ public class HomePager extends BasePager implements OnClickListener,
 	private PullListView mLvBills;
 	private BillAdapter adapter;
 	private List<Bill> mListBills;
-	private List<Bill> mCacheBills;
-	private static final int SORT_NO = 0;
-	private static final int SORT_AMOUNT = 1;
-	private static final int SORT_TIME = 2;
 	private boolean CURR_SORT = false;
 	private Bills mCurrBill = null;
 	private PopupWindow popupWindow;

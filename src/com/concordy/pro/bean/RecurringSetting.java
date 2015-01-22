@@ -3,10 +3,6 @@ package com.concordy.pro.bean;
 import java.io.Serializable;
 
 public class RecurringSetting implements Serializable{
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private int RepeatBy;
 	public int Interval;

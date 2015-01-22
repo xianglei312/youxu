@@ -1,74 +1,49 @@
 package com.concordy.pro;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.Gravity;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.ScrollView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.concordy.pro.adapter.Itemadapter;
 import com.concordy.pro.bean.Bill;
 import com.concordy.pro.bean.Bill.Item;
 import com.concordy.pro.bean.Category;
-import com.concordy.pro.bean.HttpError;
 import com.concordy.pro.bean.RecurringSetting;
 import com.concordy.pro.bean.Vendor;
 import com.concordy.pro.http.HttpHelper;
 import com.concordy.pro.http.HttpHelper.HttpResult;
-import com.concordy.pro.http.protocol.BaseProtocol;
-import com.concordy.pro.http.protocol.CategoryProtocol;
-import com.concordy.pro.ui.widget.CalendarView;
-import com.concordy.pro.ui.widget.CalendarView.OnDateClickListener;
 import com.concordy.pro.ui.widget.CustomerEditText;
 import com.concordy.pro.ui.widget.CustomerEditText.AutoEditTextListener;
 import com.concordy.pro.utils.CommonUtil;
 import com.concordy.pro.utils.ContentValue;
 import com.concordy.pro.utils.LogUtils;
 import com.concordy.pro.utils.PromptManager;
-import com.concordy.pro.utils.SharedPreferencesUtils;
 import com.concordy.pro.utils.StringUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.ViewUtils;
-import com.lidroid.xutils.exception.HttpException;
-import com.lidroid.xutils.http.RequestParams;
-import com.lidroid.xutils.http.ResponseInfo;
-import com.lidroid.xutils.http.callback.RequestCallBack;
-import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.lidroid.xutils.view.annotation.ViewInject;
 
 public class InvoiceActivity extends BaseBillActivity implements OnClickListener,OnCheckedChangeListener{
@@ -95,6 +70,10 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 	private CustomerEditText cetDueDate;
 	@ViewInject(R.id.cet_bill_vendor)
 	private CustomerEditText cetVendor;
+	@ViewInject(R.id.et_total_amount_bill)
+	private EditText etAmount;
+	@ViewInject(R.id.lv_item_bill)
+	private ListView lvBillItem;
 	
 	/*@ViewInject(R.id.actv_custom_auto)
 	private AutoCompleteTextView actvVendor;
@@ -104,17 +83,28 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 	private EditText etBillDate;
 	@ViewInject(R.id.et_due_date_bill)
 	private EditText etDueDate;
-*/	@ViewInject(R.id.et_total_amount_bill)
-	private EditText etAmount;
-	@ViewInject(R.id.lv_item_bill)
-	private ListView lvBillItem;
-	/*@ViewInject(R.id.btn_calendor_bill)
+	
+	@ViewInject(R.id.btn_calendor_bill)
 	private Button btnCalendor;*/
+	/*
+	private  ImageView ivCamera;
+	private ImageView ivShowBill;
+	private Button btnAddItem;
+	private Button btnShowHide;
+	private Button btnSubBill;
+	private LinearLayout llNotes;
+	private ScrollView scrollView;
+	private CheckBox cbRecurring;
+	private CustomerEditText cetBillDate;
+	private CustomerEditText cetDueDate;
+	private CustomerEditText cetVendor;
+	private EditText etAmount;
+	private ListView lvBillItem;
+	*/
 	
 	private Context context;
 	public final static int REQUEST_CODE_TAKE_PICTURE = 12;// 设置拍照操作的标志
 	protected String mUri;
-	private List<Vendor> mVendorList;
 	private List<Category> mCateList;
 	private Itemadapter	mItemadapter;
 	private Bill mBill;
@@ -129,7 +119,7 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+		LogUtils.d("子Activity执行了...");
 		setContentView(R.layout.activity_invoice);
 		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE,
 				R.layout.layout_invoice_title_bar);// 设置titleBar 布局文件
@@ -141,6 +131,7 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 	 */
 	private void init() {
 		initDa();
+		initView();
 		context = this;
 		isRecurring = false;
 		btnSubBill.setOnClickListener(this);
@@ -177,7 +168,7 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 				showVendor(cetVendor);
 			}
 		});
-		/*//lvBillItem = (ListView) findViewById(R.id.lv_item_bill);
+		//lvBillItem = (ListView) findViewById(R.id.lv_item_bill);
 		mItemadapter = new Itemadapter(this,items,new com.concordy.pro.adapter.Itemadapter.Delete() {
 			@Override
 			public void delete(ArrayList<String> arr, int position) {
@@ -188,7 +179,7 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 		}); 
 		lvBillItem.setAdapter(mItemadapter);
 		//setListViewHeightBasedOnChildren(lvBillItem);
-		scrollView.smoothScrollTo(0,0); */ 
+		scrollView.smoothScrollTo(0,0);  
 		//btnDrop.setOnClickListener(this);
 		//if(mVendorAdapter!=null)
 		//actvVendor.setEnabled(false);
@@ -208,10 +199,10 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 		}else{
 			items = new ArrayList<Item>();
 		}
-		getVendors();
-		getCategory();
+		/*getVendors();
+		getCategory();*/
 	}
-	private void getCategory() {
+	/*private void getCategory() {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -221,9 +212,9 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 			}
 		}).start();
 	}
-	/**
+	*//**
 	 * 获取Vendors 
-	 * */
+	 * *//*
 	private void getVendors() {
 		HttpUtils http = new HttpUtils();
 		RequestParams params = new RequestParams();
@@ -247,12 +238,14 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 				}
 			}
 		});
-	}
+	}*/
 	/***
 	 * 填充Bill 数据
 	 * 
 	 * */
 	private void processBill(Bill bill) {
+		if(bill==null)
+			return;
 		billId = bill.getId();
 		if(bill.getVendor()!=null){
 			mVendor = bill.getVendor();
@@ -272,7 +265,7 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 		}
 	}
 	/**
-	 * 解析vendor数据
+	 * 解析json数据
 	 * @param <T>
 	 * @param result
 	 */
@@ -284,11 +277,13 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 		return gson.fromJson(result, new TypeToken<ArrayList<T>>(){}.getType());
 	}
 	/**
-	 * 
+	 * 封装bill对象
 	 */
-	public void bill_value(Intent intent) { 
+	public void fillBill() { 
 		if(mBill==null)
 			mBill = new Bill();
+		LogUtils.d("billid:"+billId);
+		mBill.setId(billId);
 		mBill.setBillDate(cetBillDate.getText());
 		mBill.setAmount(Float.parseFloat(etAmount.getText().toString().trim()));
 		mBill.setDueDate(cetDueDate.getText());
@@ -297,18 +292,17 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 			mCategory = mCateList.get(0); 
 		mBill.setCategory(mCategory);
 		mBill.setItems(items);
-		if(null != intent){			
+		/*if(null != intent){			
 			rs = (RecurringSetting) intent.getExtras().getSerializable("RS");
 			mBill.setRecurringSetting(rs);
 			System.out.println("接受的RecurringSetting数据:"+rs.toString());
 		}else{
 			rs = null;
 			mBill.setRecurringSetting(rs);
-		}
+		}*/
 	};
 	@Override
 	public void onClick(View v) {
-
 		switch (v.getId()) {
 		case R.id.iv_camera_bill:
 			ivShowBill.setVisibility(View.VISIBLE);
@@ -327,184 +321,13 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 		case R.id.btn_sub_bill:
 			//
 			//jump();
-			save_addbill();
+			send2Server();
 			break;
 		default:
 			break;
 		}
 	}
-	/***
-	 * 显示日历控件
-	 */
-	private void showCalendor(final View parentView) {
-		View view = View.inflate(this, R.layout.ui_pop_calender,null);
-		//ViewUtils.inject(view);
-		//获取日历控件对象
-		final CalendarView calendar = (CalendarView)view.findViewById(R.id.calendar_bill);
-				calendar.setSelectMore(false); //单选  
-				ImageButton		calendarLeft = (ImageButton)view.findViewById(R.id.ib_left_calendar);
-				final TextView	calendarCenter = (TextView)view.findViewById(R.id.tv_date_calendar);
-				ImageButton	calendarRight = (ImageButton)view.findViewById(R.id.ib_right_calendar);
-				final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-				try {
-					//设置日历日期
-					Date date = format.parse("2015-01-01");
-					calendar.setCalendarData(date);
-				} catch (ParseException e) {
-					e.printStackTrace();
-				}
-				//获取日历中年月 ya[0]为年，ya[1]为月（格式大家可以自行在日历控件中改）
-				String[] ya = calendar.getYearAndmonth().split("-"); 
-				calendarCenter.setText(ya[0]+"年"+ya[1]+"月");
-				calendarLeft.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						//点击上一月 同样返回年月 
-						String leftYearAndmonth = calendar.clickLeftMonth(); 
-						String[] ya = leftYearAndmonth.split("-"); 
-						calendarCenter.setText(ya[0]+"年"+ya[1]+"月");
-					}
-				});
-				calendarRight.setOnClickListener(new OnClickListener() {
-					
-					@Override
-					public void onClick(View v) {
-						//点击下一月
-						String rightYearAndmonth = calendar.clickRightMonth();
-						String[] ya = rightYearAndmonth.split("-"); 
-						calendarCenter.setText(ya[0]+"年"+ya[1]+"月");
-					}
-				});
-				calendar.setOnItemClickListener(new OnDateClickListener() {
-					@Override
-					public void OnItemClick(Date selectedStartDate, Date selectedEndDate,
-							Date downDate) {
-						//Log
-						if(calendar.isSelectMore()){
-							Toast.makeText(getApplicationContext(), format.format(selectedStartDate)+"到"+format.format(selectedEndDate), Toast.LENGTH_SHORT).show();
-						}else{
-							Toast.makeText(getApplicationContext(), format.format(downDate), Toast.LENGTH_SHORT).show();
-							((CustomerEditText) parentView).setText( format.format(downDate));
-							dismissPop(mPopVendor);
-						}
-					}
-				});
-				/*//设置控件监听，可以监听到点击的每一天
-				calendar.setOnItemClickListener(new OnItemClickListener() {
-					@Override
-					public void OnItemClick(Date selectedStartDate,
-							Date selectedEndDate, Date downDate) {
-						if(calendar.isSelectMore()){
-							Toast.makeText(getApplicationContext(), format.format(selectedStartDate)+"到"+format.format(selectedEndDate), Toast.LENGTH_SHORT).show();
-						}else{
-							Toast.makeText(getApplicationContext(), format.format(downDate), Toast.LENGTH_SHORT).show();
-						}
-					}
-				});*/
-			setPopStyle(view, parentView);	
-	}
-	/**
-	 * 显示Vendor
-	 */
-	private void showVendor(final View parentView) {
-		/*if(mVendorList==null){
-			PromptManager.showToast(this, "未找到Vendor");
-			return;
-		}*/
-		//Toast.makeText(this, "右边按钮", 0).show();
-		View view = View.inflate(this, R.layout.ui_pop_item, null);
-		TextView tv = (TextView) view.findViewById(R.id.tv_pop_item_add);
-		tv.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				PromptManager.showToast(InvoiceActivity.this, "添加Vendor");
-				dismissPop(mPopVendor);
-				return ;
-			}
-		});
-		ListView lv = (ListView) view.findViewById(R.id.lv);
-		if(mVendorAdapter==null){
-			if(mVendorList ==  null){
-				mVendorList = new ArrayList<Vendor>();
-				mVendorList.add(new Vendor("", "供应商"));
-			}
-			LogUtils.d("vendorList:"+mVendorList);
-			mVendorAdapter = new VendorAdapter(this,mVendorList);
-		}
-		lv.setAdapter(mVendorAdapter);
-		lv.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				mVendor = mVendorList.get(position);
-				((CustomerEditText) parentView).setText(mVendor.getName());
-				dismissPop(mPopVendor);
-			}
-		});
-		//SimpleAdapter adp = new SimpleAdapter(getApplicationContext(), data, R.layout.ui_pop_item_lv, null, null);
-		setPopStyle(view,parentView);
-	}
-	/***
-	 * 设置Pop样式，位置
-	 * @param parentView 挂载到哪个View上
-	 * @param postionView
-	 */
-	private void setPopStyle( View parentView,View postionView) {
-		int[] local = new int[2];
-		postionView.getLocationOnScreen(local);
-		mPopVendor = new PopupWindow(parentView,-2,-2);
-		// lv.setItemsCanFocus(false); 
-		mPopVendor.setFocusable(true);
-		mPopVendor.setOutsideTouchable(true);
-		ColorDrawable colorDrawable = new ColorDrawable(Color.WHITE);// 创建了一个透明颜色的背景
-		mPopVendor.setBackgroundDrawable(colorDrawable);
-		mPopVendor.showAtLocation(parentView, Gravity.TOP|Gravity.LEFT, 0,local[1]+postionView.getHeight());
-	}
-	/***
-	 * 销毁pop
-	 */
-	private void dismissPop(PopupWindow pop)
-	{
-		if(pop!=null)
-			pop.dismiss();
-		pop = null;
-	}
-	class VendorAdapter extends BaseAdapter{
-		private List<Vendor> vendorList;
-		private Context ct;
-		public VendorAdapter(Context ct,List<Vendor> result){
-			LogUtils.d("vendorAdapter:"+result);
-			this.vendorList = result;
-			this.ct = ct;
-		}
-		@Override
-		public int getCount() {
-			return vendorList.size();
-		}
-		@Override
-		public Object getItem(int position) {
-			return vendorList.get(position);
-		}
-		@Override
-		public long getItemId(int position) {
-			return 0;
-		}
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			LogUtils.d("vendor:"+vendorList);
-			Vendor vendor = vendorList.get(position);
-			TextView tv;
-			if(convertView ==null){
-				tv = new TextView(ct); 
-			}else{
-				tv = (TextView) convertView;
-			}
-			LogUtils.d("vendor:"+vendor);
-			LogUtils.d("name:"+vendor.getName());
-			//tv.setText(mVendors.get(position).getName());
-			return tv;
-		}
-	}
+	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -522,8 +345,6 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 			ivShowBill.setImageBitmap(bitmap);// 将图片显示在ImageView里  
 		}
 	}
-	private PopupWindow mPopVendor;
-	private VendorAdapter mVendorAdapter;
 	/**
 	 * 获取图片并压缩图片
 	 * @param imagePath
@@ -531,14 +352,10 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 	private Bitmap getImage(String imagePath) {
 		return BitmapFactory.decodeFile(imagePath);
 	}*/
-	private void save_addbill() {
+	private void send2Server() {
 		LogUtils.d("isRecurring:"+isRecurring);
-		if(isRecurring){
-			addbill();
-		}else if(!isRecurring){
-			bill_value(null);
-			addbill();
-		}
+		fillBill();
+		sendData();
 	}
 	/***
 	 * 设置listView高度
@@ -562,10 +379,8 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 				+ (listView.getDividerHeight() * (listAdapter.getCount() - 1));
 		listView.setLayoutParams(params);
 	}
-	/***
-	 * 发送Bill到服务器
-	 */
-	public void addbill() {
+	@Override
+	public void sendData() {
 		String json = CommonUtil.bean2Json(mBill);
 		LogUtils.d("json:"+json);
 		new AsyncTask<String, Void, String>() {
@@ -604,15 +419,5 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 			Intent intent = new Intent(context, RecurringInvoice.class);
 			startActivityForResult(intent, INTENT_RECURRING_FLAG);//请求码为-1
 		}
-	}
-	@Override
-	public void initData() {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void inflatBill() {
-		// TODO Auto-generated method stub
-		
 	}
 }

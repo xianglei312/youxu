@@ -47,6 +47,8 @@
         </activity>
         <activity android:name="com.concordy.pro.PinLoginActivity" >
         </activity>
+        <activity android:name="com.concordy.pro.BaseBillActivity" >
+        </activity>
         <activity android:name="com.concordy.pro.PinSetItemActivity" >
         </activity>
         <activity android:name="com.concordy.pro.ConfigSetActivity" >
