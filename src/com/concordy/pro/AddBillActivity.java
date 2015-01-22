@@ -102,12 +102,9 @@ public class AddBillActivity extends Activity implements OnClickListener,
 	private List<Category> mCateList;
 	private Itemadapter mItemadapter;
 	private Bill mBill;
-	private Item billItem;
 	private boolean isRecurring;
 	private Vendor mVendor;
 	private Category mCategory;
-	private String mVenName, mVenId, name, price;
-	private int number;
 	private RecurringSetting rs;
 	private List<Item> items;
 	private String url = ContentValue.NEWSERVER_URL + "/"
@@ -203,32 +200,7 @@ public class AddBillActivity extends Activity implements OnClickListener,
 	}
 
 	/**
-	 * 获取Vendors
-	 * */
-	/*
-	 * private void getVendors() { HttpUtils http = new HttpUtils();
-	 * RequestParams params = new RequestParams();
-	 * params.setHeader("authorization","bearer "+
-	 * SharedPreferencesUtils.getString(this,ContentValue.SPFILE_TOKEN, ""));
-	 * params.setHeader(ContentValue.CONTENT_TYPE,
-	 * ContentValue.APPLICATION_JSON);
-	 * params.setHeader(ContentValue.ACCEPT_TYPE,
-	 * ContentValue.APPLICATION_JSON); http.send(HttpMethod.GET,
-	 * ContentValue.SERVER_URI+"/vendor",params, new RequestCallBack<String>() {
-	 * 
-	 * @Override public void onFailure(HttpException arg0, String info) {
-	 * LogUtils.d("failure...."+info); }
-	 * 
-	 * @Override public void onSuccess(ResponseInfo<String> info) {
-	 * if(info.statusCode==200){ mVendorList=
-	 * parseData(info.result,Vendor.class); }else{ HttpError httpError =
-	 * CommonUtil.json2Bean(info.result, HttpError.class);
-	 * PromptManager.showToast(getApplicationContext(),
-	 * httpError.getErrorMsg()); return; } } }); }
-	 */
-	/**
-	 * 解析vendor数据
-	 * 
+	 * 解析数据
 	 * @param <T>
 	 * @param result
 	 */
@@ -243,30 +215,6 @@ public class AddBillActivity extends Activity implements OnClickListener,
 	 * 
 	 */
 	public void bill_value(Intent intent) {
-		int length = mItemadapter.items.size();
-		// listView的条数
-		/*for (int i = 0; i < length; i++) {
-			LinearLayout content = (LinearLayout) lvBillItem.getChildAt(i);
-			EditText itemname = (EditText) content.findViewById(R.id.itemname);
-			EditText itemnumber = (EditText) content
-					.findViewById(R.id.et_bill_item);
-			EditText itemprice = (EditText) content
-					.findViewById(R.id.itemprice);
-			name = itemname.getText().toString();
-			String numberStr = itemnumber.getText().toString();
-			if (!TextUtils.isEmpty(numberStr)) {
-				number = Integer.valueOf(numberStr);
-			}
-			price = itemprice.getText().toString();
-			billItem = new Item(name, number, price);
-			items.add(billItem);
-		}*/
-		/*
-		 * String bd = etBillDate.getText().toString(); int at
-		 * =Integer.parseInt(etAmount.getText().toString()); String dd =
-		 * etDueDate.getText().toString();
-		 */
-		// mBill = new Bill(bd,at,dd);
 		mBill = new Bill();
 		mBill.setBillDate(cetBillDate.getText());
 		mBill.setAmount(Integer.parseInt(etAmount.getText().toString().trim()));

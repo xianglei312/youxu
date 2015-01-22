@@ -65,7 +65,6 @@ public class BaseActivity extends Activity {
 			if (activity != except) activity.finish();
 		}
 	}
-
 	public static boolean hasActivity() {
 		return mActivities.size() > 0;
 	}

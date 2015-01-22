@@ -199,46 +199,7 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 		}else{
 			items = new ArrayList<Item>();
 		}
-		/*getVendors();
-		getCategory();*/
 	}
-	/*private void getCategory() {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				CategoryProtocol cp = new CategoryProtocol();
-				mCateList = cp.load(BaseProtocol.GET_DATA,ContentValue.SERVER_URI+"/"+ContentValue.URI_CATEGORY, ContentValue.APPLICATION_JSON);
-				//LogUtils.d("category:"+mCateList.toString());
-			}
-		}).start();
-	}
-	*//**
-	 * 获取Vendors 
-	 * *//*
-	private void getVendors() {
-		HttpUtils http = new HttpUtils();
-		RequestParams params = new RequestParams();
-		params.setHeader("authorization","bearer "+ SharedPreferencesUtils.getString(this,ContentValue.SPFILE_TOKEN, ""));
-		params.setHeader(ContentValue.CONTENT_TYPE, ContentValue.APPLICATION_JSON);
-		params.setHeader(ContentValue.ACCEPT_TYPE,
-				ContentValue.APPLICATION_JSON);
-		http.send(HttpMethod.GET, ContentValue.SERVER_URI+"/vendor",params, new RequestCallBack<String>() {
-			@Override
-			public void onFailure(HttpException arg0, String info) {
-				LogUtils.d("failure...."+info);
-			}
-			@Override
-			public void onSuccess(ResponseInfo<String> info) {
-				if(info.statusCode==200){
-					mVendorList= parseData(info.result,Vendor.class);
-				}else{
-					HttpError httpError = CommonUtil.json2Bean(info.result, HttpError.class);
-					PromptManager.showToast(getApplicationContext(), httpError.getErrorMsg());
-					return;
-				}
-			}
-		});
-	}*/
 	/***
 	 * 填充Bill 数据
 	 * 
@@ -272,13 +233,9 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 	protected <T> List<T> parseData(String result,Class<T> clz) {
 		LogUtils.d("result:"+result);
 		Gson gson = new Gson();
-		//mVendorList = 
-		//LogUtils.d("vendorlist:"+mVendorList);
 		return gson.fromJson(result, new TypeToken<ArrayList<T>>(){}.getType());
 	}
-	/**
-	 * 封装bill对象
-	 */
+	@Override
 	public void fillBill() { 
 		if(mBill==null)
 			mBill = new Bill();
@@ -292,14 +249,6 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 			mCategory = mCateList.get(0); 
 		mBill.setCategory(mCategory);
 		mBill.setItems(items);
-		/*if(null != intent){			
-			rs = (RecurringSetting) intent.getExtras().getSerializable("RS");
-			mBill.setRecurringSetting(rs);
-			System.out.println("接受的RecurringSetting数据:"+rs.toString());
-		}else{
-			rs = null;
-			mBill.setRecurringSetting(rs);
-		}*/
 	};
 	@Override
 	public void onClick(View v) {
