@@ -12,27 +12,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.concordy.pro.R;
 import com.concordy.pro.bean.User;
-import com.concordy.pro.ui.base.BaseTitleActivity;
 import com.concordy.pro.utils.CommonUtil;
 import com.concordy.pro.utils.ContentValue;
 import com.concordy.pro.utils.LogUtils;
 import com.concordy.pro.utils.PromptManager;
 import com.concordy.pro.utils.SharedPreferencesUtils;
-import com.lidroid.xutils.ViewUtils;
-import com.lidroid.xutils.view.annotation.ViewInject;
 
-public class PinSetActivity extends BaseTitleActivity implements OnClickListener {
-	@ViewInject(R.id.et_pin_guide)
+public class PinSetActivity extends BaseActivity implements OnClickListener {
 	private EditText mEtPin;
-	@ViewInject(R.id.btn_next_login)
 	private Button mBtnNext;
-	@ViewInject(R.id.tv_skip_guide)
 	private TextView mTvSkip;
-	@ViewInject(R.id.tv_txt_title)
 	private TextView mTvTitle;
-	@ViewInject(R.id.btn_left)
 	private Button mBtnLeft;
 	private String mPin;
 	private Intent intent;
@@ -43,11 +34,17 @@ public class PinSetActivity extends BaseTitleActivity implements OnClickListener
 		setContentView(R.layout.guide_pin);
 		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, layout);
 		initView();
+		mActivities.add(this);
 	};
 	@Override
 	protected void initView() {
+		mEtPin = (EditText) findViewById(R.id.et_pin_guide);
+		mBtnNext = (Button) findViewById(R.id.btn_next_login);
+		mTvSkip = (TextView) findViewById(R.id.tv_skip_guide);
+		mTvTitle = (TextView) findViewById(R.id.tv_txt_title);
+		mBtnLeft = (Button) findViewById(R.id.btn_left);
+		
 		intent = getIntent();
-		ViewUtils.inject(this);
 		mBtnNext.setOnClickListener(this);
 		mTvSkip.setOnClickListener(this);
 		mBtnLeft.setVisibility(View.GONE);
@@ -118,6 +115,7 @@ public class PinSetActivity extends BaseTitleActivity implements OnClickListener
 		//开启意图跳转首页
 		intent.setClass(this, MainActivity.class);
 		startActivity(intent);
+		finishAll();
 	}
 	@Override
 	protected void onPause() {

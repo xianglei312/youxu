@@ -8,10 +8,14 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.View.MeasureSpec;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
+import com.concordy.pro.BaseActivity;
 import com.concordy.pro.manager.BaseApplication;
-import com.concordy.pro.ui.base.BaseActivity;
 
 public class UIUtils {
 	public static Context getContext() {
@@ -133,6 +137,29 @@ public class UIUtils {
 		if (frontActivity != null) {
 			Toast.makeText(frontActivity, str, Toast.LENGTH_LONG).show();
 		}
+	}
+	
+	/***
+	 * 设置listView高度
+	 * @param listView
+	 */
+	public static void setListViewHeightBasedOnChildren(ListView listView) {
+		// 获取listview的适配器
+		ListAdapter listAdapter = listView.getAdapter();
+		if (listAdapter == null) {
+			return;
+		}
+		int totalHeight = 0;
+		for (int i = 0; i < listAdapter.getCount(); i++) {
+			View listItem = listAdapter.getView(i, null, listView);
+			listItem.measure(MeasureSpec.makeMeasureSpec(getResources()
+					.getDisplayMetrics().widthPixels, MeasureSpec.EXACTLY), 0);
+			totalHeight += listItem.getMeasuredHeight();
+		}
+		ViewGroup.LayoutParams params = listView.getLayoutParams();
+		params.height = totalHeight
+				+ (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+		listView.setLayoutParams(params);
 	}
 }
 

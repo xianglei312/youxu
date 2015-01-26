@@ -1,20 +1,116 @@
 package com.concordy.pro.bean;
 
-import java.io.Serializable;
 
-public class Company implements Serializable{
+public class Company extends Entity{
 
 
-	private int Id;
-	private String Name;
-	private String DisplayName;
-	private String LogoUrl;
-	private String Website;
-	private String CreatedOn;
-	private int CreatedBy;
-	private String LastUpdatedOn;
-	private int LastUpdatedBy;
+	private int id;
+	private String name;
+	private String displayName;
+	private String logoUrl;
+	private String website;
+	private String createdOn;
+	private int createdBy;
+	private String lastUpdatedOn;
+	private int lastUpdatedBy;
 	private Address address;
+	protected int getId() {
+		return id;
+	}
+	protected void setId(int id) {
+		this.id = id;
+	}
+
+
+	protected String getName() {
+		return name;
+	}
+
+
+	protected void setName(String name) {
+		this.name = name;
+	}
+
+
+	protected String getDisplayName() {
+		return displayName;
+	}
+
+
+	protected void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+
+	protected String getLogoUrl() {
+		return logoUrl;
+	}
+
+
+	protected void setLogoUrl(String logoUrl) {
+		this.logoUrl = logoUrl;
+	}
+
+
+	protected String getWebsite() {
+		return website;
+	}
+
+
+	protected void setWebsite(String website) {
+		this.website = website;
+	}
+
+
+	protected String getCreatedOn() {
+		return createdOn;
+	}
+
+
+	protected void setCreatedOn(String createdOn) {
+		this.createdOn = createdOn;
+	}
+
+
+	protected int getCreatedBy() {
+		return createdBy;
+	}
+
+
+	protected void setCreatedBy(int createdBy) {
+		this.createdBy = createdBy;
+	}
+
+
+	protected String getLastUpdatedOn() {
+		return lastUpdatedOn;
+	}
+
+
+	protected void setLastUpdatedOn(String lastUpdatedOn) {
+		this.lastUpdatedOn = lastUpdatedOn;
+	}
+
+
+	protected int getLastUpdatedBy() {
+		return lastUpdatedBy;
+	}
+
+
+	protected void setLastUpdatedBy(int lastUpdatedBy) {
+		this.lastUpdatedBy = lastUpdatedBy;
+	}
+
+
+	protected Address getAddress() {
+		return address;
+	}
+
+
+	protected void setAddress(Address address) {
+		this.address = address;
+	}
+
 
 	public Company(){};
 
@@ -23,120 +119,7 @@ public class Company implements Serializable{
 			String website, String createdOn, int createdBy,
 			String lastUpdatedOn, int lastUpdatedBy, Address address) {
 		super();
-		Id = id;
-		Name = name;
-		DisplayName = displayName;
-		LogoUrl = logoUrl;
-		Website = website;
-		CreatedOn = createdOn;
-		CreatedBy = createdBy;
-		LastUpdatedOn = lastUpdatedOn;
-		LastUpdatedBy = lastUpdatedBy;
-		this.address = address;
 	}
-
-
-	public int getId() {
-		return Id;
-	}
-
-
-	public void setId(int id) {
-		Id = id;
-	}
-
-
-	public String getName() {
-		return Name;
-	}
-
-
-	public void setName(String name) {
-		Name = name;
-	}
-
-
-	public String getDisplayName() {
-		return DisplayName;
-	}
-
-
-	public void setDisplayName(String displayName) {
-		DisplayName = displayName;
-	}
-
-
-	public String getLogoUrl() {
-		return LogoUrl;
-	}
-
-
-	public void setLogoUrl(String logoUrl) {
-		LogoUrl = logoUrl;
-	}
-
-
-	public String getWebsite() {
-		return Website;
-	}
-
-
-	public void setWebsite(String website) {
-		Website = website;
-	}
-
-
-	public String getCreatedOn() {
-		return CreatedOn;
-	}
-
-
-	public void setCreatedOn(String createdOn) {
-		CreatedOn = createdOn;
-	}
-
-
-	public int getCreatedBy() {
-		return CreatedBy;
-	}
-
-
-	public void setCreatedBy(int createdBy) {
-		CreatedBy = createdBy;
-	}
-
-
-	public String getLastUpdatedOn() {
-		return LastUpdatedOn;
-	}
-
-
-	public void setLastUpdatedOn(String lastUpdatedOn) {
-		LastUpdatedOn = lastUpdatedOn;
-	}
-
-
-	public int getLastUpdatedBy() {
-		return LastUpdatedBy;
-	}
-
-
-	public void setLastUpdatedBy(int lastUpdatedBy) {
-		LastUpdatedBy = lastUpdatedBy;
-	}
-
-
-	public Address getAddress() {
-		return address;
-	}
-
-
-	public void setAddress(Address address) {
-		this.address = address;
-	}
-
-
-
 
 
 }

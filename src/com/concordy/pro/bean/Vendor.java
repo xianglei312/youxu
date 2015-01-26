@@ -1,8 +1,6 @@
 package com.concordy.pro.bean;
 
-import java.io.Serializable;
-
-public class Vendor implements Serializable{
+public class Vendor extends Entity{
 	private String id;
 	private String name;
 	public Vendor(){}

@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -23,40 +22,28 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
 
-import com.concordy.pro.R;
-import com.concordy.pro.http.HttpHelper;
-import com.concordy.pro.http.HttpHelper.HttpResult;
-import com.concordy.pro.utils.ContentValue;
-import com.concordy.pro.utils.LogUtils;
 import com.concordy.pro.utils.PromptManager;
-import com.concordy.pro.utils.SharedPreferencesUtils;
-import com.concordy.pro.utils.StringUtils;
-import com.lidroid.xutils.ViewUtils;
-import com.lidroid.xutils.view.annotation.ViewInject;
 
 public class WelcomeActivity extends Activity implements OnClickListener {
 	private Context ct;
-	@ViewInject(R.id.gv_home)
 	private GridView mGridView;
 	private WelcomeAdapter adapter;
-	@ViewInject(R.id.tv_link_signin)
 	private TextView mSignIn;
-	@ViewInject(R.id.tv_link_signup)
 	private TextView mSignUp;
 	private static String[] mGvWelcome;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub 
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.welcome_activity);
-		ViewUtils.inject(this);
-		init();
-//		----------------leo------------------------
+		initView();
 	}
-	
-	
-	private void init() {
+	private void initView()  {
+		mGridView = (GridView) findViewById(R.id.gv_home);
+		mSignIn = (TextView) findViewById(R.id.tv_link_signin);
+		mSignUp = (TextView) findViewById(R.id.tv_link_signup);
+		
+		
 		ct = getApplicationContext();
 		//4个导航内容
 		mGvWelcome = new String[] {
@@ -76,7 +63,7 @@ public class WelcomeActivity extends Activity implements OnClickListener {
 				switch (position) {
 				case 0:
 //					跳转到invoice发票  ，通过intent
-					Intent intent = new Intent(ct,InvoiceActivity.class);
+					Intent intent = new Intent(ct,AddBillActivity.class);
 					startActivity(intent);
 					break;
 				case 1:
@@ -105,7 +92,6 @@ public class WelcomeActivity extends Activity implements OnClickListener {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View view = View.inflate(WelcomeActivity.this,
 					R.layout.item_welcome, null);
-			ViewUtils.inject(view);
 			tv = (TextView) view.findViewById(R.id.tv_item_wel);
 			tv.setText(mGvWelcome[position]);
 			return view;

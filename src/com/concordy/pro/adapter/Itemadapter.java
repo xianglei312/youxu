@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+
 import com.concordy.pro.R;
 import com.concordy.pro.bean.Bill.Item;
 import com.concordy.pro.utils.LogUtils;
@@ -20,16 +21,18 @@ import com.concordy.pro.utils.StringUtils;
 public class Itemadapter extends BaseAdapter {
 	private final int NAME =0 ;
 	private final int NUM =1 ;
-	private final int PRICE =2 ;
+	private final int PRICE =2;
 	private ViewHolder holder;
 	private LayoutInflater mInflater;
 	public List<Item> items;
+	private DeleteListener deleteListener;
 	private Item item;
 	
-	public Itemadapter(Context context,List<Item> arr,com.concordy.pro.adapter.Itemadapter.Delete delete2) {  
+	public Itemadapter(Context context,List<Item> arr,com.concordy.pro.adapter.Itemadapter.DeleteListener delete) {  
 		super(); 
 		mInflater = LayoutInflater.from(context);
 		this.items = arr;
+		this.deleteListener = delete;
 	}  
 	@Override
 	public int getCount() {
@@ -74,8 +77,11 @@ public class Itemadapter extends BaseAdapter {
 		holder.delete.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				items.remove(position);
-				notifyDataSetChanged();
+				/*items.remove(position);
+				notifyDataSetChanged();*/
+				//UIUtils.setListViewHeightBasedOnChildren(get);
+				if(deleteListener!=null)
+					deleteListener.delete(items, position);
 			}
 		});
 
@@ -88,8 +94,8 @@ public class Itemadapter extends BaseAdapter {
 		private ImageView delete;
 	}
 	
-	public interface Delete{
-		void delete(ArrayList<String> arr,int position);
+	public interface DeleteListener{
+		void delete(List<Item> arr,int position);
 	}
 	class MyEditViewChanged implements TextWatcher{
 		private String result = "";

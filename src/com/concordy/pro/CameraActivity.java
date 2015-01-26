@@ -1,22 +1,16 @@
 package com.concordy.pro;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.PictureCallback;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
@@ -25,21 +19,12 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
-
-import com.concordy.pro.R;
-import com.concordy.pro.ui.base.BaseActivity;
 import com.concordy.pro.utils.DrawableUtils;
-import com.lidroid.xutils.ViewUtils;
-import com.lidroid.xutils.view.annotation.ViewInject;
 
 public class CameraActivity extends BaseActivity implements OnClickListener {
 	private Camera camera;
-	@ViewInject(R.id.sv_camera)
 	private SurfaceView mSurfaceView;
-	@ViewInject(R.id.bt_camera_take)
 	private Button mTakePic;
-	@ViewInject(R.id.rl_camera_bottom)
 	private RelativeLayout rl_camera_bottom;
 	private SurfaceHolder holder;
 	private Intent intent;
@@ -51,7 +36,13 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_camera);
 		intent = getIntent();
-		ViewUtils.inject(this);
+		initView();
+
+	}
+
+	@SuppressLint("NewApi")
+	@Override
+	protected void initView() {
 		// 设置背景图片
 		GradientDrawable bg = DrawableUtils.createDrawable(Color.DKGRAY,
 				Color.DKGRAY, 0);
@@ -61,7 +52,10 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
 		holder = mSurfaceView.getHolder();
 		mTakePic.setOnClickListener(this);
 		holder.addCallback(new MyCallBack()); // 设置Surfaceview的回调接口
-	}
+		mSurfaceView = (SurfaceView) findViewById(R.id.sv_camera);
+		mTakePic = (Button) findViewById(R.id.bt_camera_take);
+		rl_camera_bottom = (RelativeLayout) findViewById(R.id.rl_camera_bottom);
+	};
 
 	class MyCallBack implements Callback {
 		/**
@@ -104,17 +98,18 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
 	public void onClick(View v) {
 
 		switch (v.getId()) {
-			case R.id.bt_camera_cancel:
-	
-				break;
-			case R.id.bt_camera_take:
-				takePic();
-				break;
-			case R.id.bt_camera_save:
-	
-				break;
+		case R.id.bt_camera_cancel:
+
+			break;
+		case R.id.bt_camera_take:
+			takePic();
+			break;
+		case R.id.bt_camera_save:
+
+			break;
 		}
 	}
+
 	/**
 	 * 拍照
 	 */

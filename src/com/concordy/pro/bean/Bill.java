@@ -5,7 +5,7 @@ import java.util.List;
 /*****
  * @author Scleo
  */
-public class Bill implements Serializable {
+public class Bill extends Entity{
 	private String id ;
 	private	String billDate;
 	private Category category;

@@ -3,11 +3,13 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
+
 import android.os.SystemClock;
 
 import com.concordy.pro.bean.HttpError;
 import com.concordy.pro.http.HttpHelper;
 import com.concordy.pro.http.HttpHelper.HttpResult;
+import com.concordy.pro.manager.AppException;
 import com.concordy.pro.utils.CommonUtil;
 import com.concordy.pro.utils.ContentValue;
 import com.concordy.pro.utils.FileUtils;
@@ -26,9 +28,9 @@ public abstract class BaseProtocol<Data> {
 	public static final int GET_MOREDATA = 2;
 	private int code;
 	private String json;
-	private String url;
-	/** 加载协议 */
-	public Data load(int flag,String url,String type) {
+	/** 加载协议 
+	 * @throws AppException */
+	public Data load(int flag,String url,String type) throws AppException {
 		//SystemClock.sleep(1000);// 休息1秒，防止加载过快，看不到界面变化效果
 		json = null;
 		if(flag==GET_DATA){
@@ -74,8 +76,9 @@ public abstract class BaseProtocol<Data> {
 		}
 		return null;
 	}
-	/** 从网络加载协议 */
-	protected String loadFromNet(String url,String type) {
+	/** 从网络加载协议 
+	 * @throws AppException */
+	protected String loadFromNet(String url,String type) throws AppException {
 		String result = null;
 		//String url = ContentValue.SERVER_URL+"/" + getKey() + getParames();
 		LogUtils.d("服务器请求地址:"+url);
@@ -122,8 +125,5 @@ public abstract class BaseProtocol<Data> {
 	}
 	protected String getJson() {
 		return json;
-	}
-	protected void setUrl(String url) {
-		this.url = url;
 	}
 }

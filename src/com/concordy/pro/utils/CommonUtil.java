@@ -140,7 +140,12 @@ public class CommonUtil {
 		}
 		return 0;
 	}
-
+	/** 当前网络是否可用 */
+	public static boolean isNetWorkNormal(Context context){
+		if(isNetworkAvailable(context)==0)
+			return false;
+		return true;
+	}
 	/**
 	 * 获取现在时间
 	 * 

@@ -16,25 +16,18 @@ import com.concordy.pro.pager.BasePager;
 import com.concordy.pro.pager.CenterPager;
 import com.concordy.pro.pager.HomePager;
 import com.concordy.pro.pager.MorePager;
-import com.concordy.pro.ui.MyViewPager;
 import com.concordy.pro.ui.LazyViewPager.OnPageChangeListener;
-import com.lidroid.xutils.ViewUtils;
-import com.lidroid.xutils.view.annotation.ViewInject;
+import com.concordy.pro.ui.MyViewPager;
 
 public class HomeFragment extends BaseFragment {
 	private final int TAB_LEFT = 0;
 	private final int TAB_CENTER = 1;
 	private final int TAB_RIGHT = 2;
 	private View view;
-	@ViewInject(R.id.view_pager)
 	private MyViewPager view_pager;
-	@ViewInject(R.id.main_radio)
 	private RadioGroup mRadio;
-	@ViewInject(R.id.rb_tab_left)
 	private RadioButton mRbLeft;
-	@ViewInject(R.id.rb_tab_center)
 	private RadioButton mRbCenter;
-	@ViewInject(R.id.rb_tab_right)
 	private RadioButton mRbRight;
 	private List<BasePager> mLists = new ArrayList<BasePager>();
 
@@ -97,7 +90,13 @@ public class HomeFragment extends BaseFragment {
 	@Override
 	public View initView(LayoutInflater inflater) {
 		view = inflater.inflate(R.layout.frag_home, null);
-		ViewUtils.inject(this, view);
+		view_pager = (MyViewPager) view.findViewById(R.id.view_pager);
+		mRadio = (RadioGroup) view.findViewById(R.id.main_radio);
+		mRbLeft = (RadioButton) view.findViewById(R.id.rb_tab_left);
+		mRbCenter = (RadioButton) view.findViewById(R.id.rb_tab_center);
+		mRbRight = (RadioButton) view.findViewById(R.id.rb_tab_right);
+		
+		
 		//mRadio = (RadioGroup) view.findViewById(R.id.main_radio);
 		/**********切换radio时执行动作*************/
 		mRadio.setOnCheckedChangeListener(new OnCheckedChangeListener() {

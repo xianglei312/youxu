@@ -1,8 +1,7 @@
 package com.concordy.pro.bean;
 
-import java.io.Serializable;
 
-public class Category implements Serializable{
+public class Category extends Entity{
 	private String id;
 	private String name;
 	private String parentId;

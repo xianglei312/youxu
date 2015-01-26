@@ -7,13 +7,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
-import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -22,72 +19,29 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ScrollView;
 
 import com.concordy.pro.adapter.Itemadapter;
+import com.concordy.pro.adapter.Itemadapter.DeleteListener;
 import com.concordy.pro.bean.Bill;
 import com.concordy.pro.bean.Bill.Item;
 import com.concordy.pro.bean.Category;
 import com.concordy.pro.bean.RecurringSetting;
 import com.concordy.pro.bean.Vendor;
-import com.concordy.pro.http.HttpHelper;
-import com.concordy.pro.http.HttpHelper.HttpResult;
 import com.concordy.pro.ui.widget.CustomerEditText;
 import com.concordy.pro.ui.widget.CustomerEditText.AutoEditTextListener;
 import com.concordy.pro.utils.CommonUtil;
 import com.concordy.pro.utils.ContentValue;
 import com.concordy.pro.utils.LogUtils;
 import com.concordy.pro.utils.PromptManager;
-import com.concordy.pro.utils.StringUtils;
+import com.concordy.pro.utils.UIUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.lidroid.xutils.ViewUtils;
-import com.lidroid.xutils.view.annotation.ViewInject;
 
 public class InvoiceActivity extends BaseBillActivity implements OnClickListener,OnCheckedChangeListener{
 	//注解初始化控件
-	@ViewInject(R.id.iv_camera_bill)
 	private ImageView ivCamera;
-	@ViewInject(R.id.iv_bill)
-	private ImageView ivShowBill;
-	@ViewInject(R.id.btn_add_bill_item)
-	private Button btnAddItem;
-	@ViewInject(R.id.btn_show_more_bill)
-	private Button btnShowHide;
-	@ViewInject(R.id.btn_sub_bill)
-	private Button btnSubBill;
-	@ViewInject(R.id.linearlayout)
-	private LinearLayout llNotes;
-	@ViewInject(R.id.scrollview)
-	private ScrollView scrollView;
-	@ViewInject(R.id.checkbox)
-	private CheckBox cbRecurring;
-	@ViewInject(R.id.cet_bill_date)
-	private CustomerEditText cetBillDate;
-	@ViewInject(R.id.cet_bill_duedate)
-	private CustomerEditText cetDueDate;
-	@ViewInject(R.id.cet_bill_vendor)
-	private CustomerEditText cetVendor;
-	@ViewInject(R.id.et_total_amount_bill)
-	private EditText etAmount;
-	@ViewInject(R.id.lv_item_bill)
-	private ListView lvBillItem;
-	
-	/*@ViewInject(R.id.actv_custom_auto)
-	private AutoCompleteTextView actvVendor;
-	@ViewInject(R.id.btn_custom_auto)
-	private Button btnDrop;
-	@ViewInject(R.id.et_bill_date_bill)
-	private EditText etBillDate;
-	@ViewInject(R.id.et_due_date_bill)
-	private EditText etDueDate;
-	
-	@ViewInject(R.id.btn_calendor_bill)
-	private Button btnCalendor;*/
-	/*
-	private  ImageView ivCamera;
 	private ImageView ivShowBill;
 	private Button btnAddItem;
 	private Button btnShowHide;
@@ -100,7 +54,6 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 	private CustomerEditText cetVendor;
 	private EditText etAmount;
 	private ListView lvBillItem;
-	*/
 	
 	private Context context;
 	public final static int REQUEST_CODE_TAKE_PICTURE = 12;// 设置拍照操作的标志
@@ -123,15 +76,26 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 		setContentView(R.layout.activity_invoice);
 		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE,
 				R.layout.layout_invoice_title_bar);// 设置titleBar 布局文件
-		ViewUtils.inject(this);
-		init();	
 	}
-	/***
-	 * 初始化控件
-	 */
-	private void init() {
-		initDa();
-		initView();
+	@Override
+	protected void initView() {
+		ivCamera = (ImageView) findViewById(R.id.iv_camera_bill);
+		ivShowBill = (ImageView) findViewById(R.id.iv_bill);
+		btnAddItem = (Button) findViewById(R.id.btn_add_bill_item);
+		btnShowHide = (Button) findViewById(R.id.btn_show_more_bill);
+		btnSubBill = (Button) findViewById(R.id.btn_sub_bill);
+		llNotes = (LinearLayout) findViewById(R.id.linearlayout);
+		scrollView = (ScrollView) findViewById(R.id.scrollview);
+		cbRecurring = (CheckBox) findViewById(R.id.checkbox);
+		cetBillDate = (CustomerEditText) findViewById(R.id.cet_bill_date);
+		cetDueDate = (CustomerEditText) findViewById(R.id.cet_bill_duedate);
+		cetVendor = (CustomerEditText) findViewById(R.id.cet_bill_vendor);
+		etAmount = (EditText) findViewById(R.id.et_total_amount_bill);
+		lvBillItem = (ListView) findViewById(R.id.lv_item_bill);
+		
+		
+		
+		initBillData();
 		context = this;
 		isRecurring = false;
 		btnSubBill.setOnClickListener(this);
@@ -169,25 +133,21 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 			}
 		});
 		//lvBillItem = (ListView) findViewById(R.id.lv_item_bill);
-		mItemadapter = new Itemadapter(this,items,new com.concordy.pro.adapter.Itemadapter.Delete() {
+		mItemadapter = new Itemadapter(this,items,new DeleteListener() {
 			@Override
-			public void delete(ArrayList<String> arr, int position) {
-				//arr.remove(position);
+			public void delete(List<Item> item, int position) {
+				item.remove(position);
 				mItemadapter.notifyDataSetChanged();
-			//setListViewHeightBasedOnChildren(lvBillItem);
+				UIUtils.setListViewHeightBasedOnChildren(lvBillItem);
 			}
 		}); 
 		lvBillItem.setAdapter(mItemadapter);
-		//setListViewHeightBasedOnChildren(lvBillItem);
 		scrollView.smoothScrollTo(0,0);  
-		//btnDrop.setOnClickListener(this);
-		//if(mVendorAdapter!=null)
-		//actvVendor.setEnabled(false);
 	}
 	/***
 	 * 初始化数据
 	 */
-	private <T>void initDa() {
+	private void initBillData() {
 		//As
 		Bundle bundle = getIntent().getExtras();
 		if(bundle!=null){
@@ -239,7 +199,6 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 	public void fillBill() { 
 		if(mBill==null)
 			mBill = new Bill();
-		LogUtils.d("billid:"+billId);
 		mBill.setId(billId);
 		mBill.setBillDate(cetBillDate.getText());
 		mBill.setAmount(Float.parseFloat(etAmount.getText().toString().trim()));
@@ -261,7 +220,7 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 		case R.id.btn_add_bill_item:
 			mItemadapter.items.add(new Item()); 
 			mItemadapter.notifyDataSetChanged(); 
-			setListViewHeightBasedOnChildren(lvBillItem);
+			UIUtils.setListViewHeightBasedOnChildren(lvBillItem);
 			break;
 		case R.id.btn_show_more_bill:
 			btnShowHide.setVisibility(View.GONE);
@@ -270,7 +229,7 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 		case R.id.btn_sub_bill:
 			//
 			//jump();
-			send2Server();
+			submit();
 			break;
 		default:
 			break;
@@ -294,72 +253,48 @@ public class InvoiceActivity extends BaseBillActivity implements OnClickListener
 			ivShowBill.setImageBitmap(bitmap);// 将图片显示在ImageView里  
 		}
 	}
-	/**
-	 * 获取图片并压缩图片
-	 * @param imagePath
-	 *//*
-	private Bitmap getImage(String imagePath) {
-		return BitmapFactory.decodeFile(imagePath);
-	}*/
-	private void send2Server() {
-		LogUtils.d("isRecurring:"+isRecurring);
-		fillBill();
-		sendData();
-	}
-	/***
-	 * 设置listView高度
-	 * @param listView
-	 */
-	public void setListViewHeightBasedOnChildren(ListView listView) {
-		// 获取listview的适配器
-		ListAdapter listAdapter = listView.getAdapter();
-		if (listAdapter == null) {
+	private void submit() {
+		if(!CommonUtil.isNetWorkNormal(context)){
+			PromptManager.showToast(ct, R.string.http_no_network);
 			return;
 		}
-		int totalHeight = 0;
-		for (int i = 0; i < listAdapter.getCount(); i++) {
-			View listItem = listAdapter.getView(i, null, listView);
-			listItem.measure(MeasureSpec.makeMeasureSpec(getResources()
-					.getDisplayMetrics().widthPixels, MeasureSpec.EXACTLY), 0);
-			totalHeight += listItem.getMeasuredHeight();
-		}
-		ViewGroup.LayoutParams params = listView.getLayoutParams();
-		params.height = totalHeight
-				+ (listView.getDividerHeight() * (listAdapter.getCount() - 1));
-		listView.setLayoutParams(params);
+		fillBill();
+		super.sendData(url,mBill);
 	}
-	@Override
-	public void sendData() {
+	
+	/*@Override
+	public <T> void sendData() {
 		String json = CommonUtil.bean2Json(mBill);
-		LogUtils.d("json:"+json);
-		new AsyncTask<String, Void, String>() {
+		new AsyncTask<String, Void, T>() {
+			
 			@Override
-			protected String doInBackground(String... params) {
-				HttpResult result = HttpHelper.put(params[0], params[1],ContentValue.APPLICATION_JSON);
-				String str = null;
-				if(result!=null){
-					LogUtils.d("服务器响应码："+result.getCode());
-					str = result.getString();
-				}
-				return str;
+			protected void onPreExecute() {
+				PromptManager.showProgressDialog(context, "请求发送数据...");
 			}
 			@Override
-			protected void onPostExecute(String result) {
-				if(StringUtils.isEmpty(result))
-				{
-					PromptManager.showToast(
-							InvoiceActivity.this,
-							getResources().getString(
-									R.string.str_send_failure));
+			protected T doInBackground(String... params) {
+				HttpResult result = null;
+				try {
+					result = HttpHelper.put(params[0], params[1],ContentValue.APPLICATION_JSON);
+				} catch (AppException e) {
+					e.printStackTrace();
+					return (T) e;
+				}
+				return (T) result;
+			}
+			@Override
+			protected void onPostExecute(T result) {
+				PromptManager.closeProgressDialog();
+				if(result instanceof AppException)
+				{ 
+					AppException  ae = (AppException) result;
+					ae.errorTosat(context);
 					return;
 				}
-				PromptManager.showToast(
-						InvoiceActivity.this,
-						getResources().getString(
-								R.string.str_send_success));
+				PromptManager.showToast(InvoiceActivity.this,getResources().getString(R.string.str_send_success));
 			}
 		}.execute(url, json);
-	}
+	}*/
 	@Override
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		System.out.println("选中状态:"+isChecked);

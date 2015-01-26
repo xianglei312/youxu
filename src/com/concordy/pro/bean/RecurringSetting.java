@@ -1,83 +1,58 @@
 package com.concordy.pro.bean;
 
-import java.io.Serializable;
 
-public class RecurringSetting implements Serializable{
-	private static final long serialVersionUID = 1L;
-	private int RepeatBy;
-	public int Interval;
-	public int RepeatOn;
-	public String StartDate;
-	public int EndsBy;
+public class RecurringSetting  extends Entity{
+	private int repeatBy;
+	private int interval;
+	private int repeatOn;
+	private String startDate;
+	private int endsBy;
 	//end on a particular date
-	public String EndDate;
+	private String endDate;
 	//end on N instance of recurrence.
-	public int EndOnTimes;
+	private int endOnTimes;
 	public int getRepeatBy() {
-		return RepeatBy;
+		return repeatBy;
 	}
 	public void setRepeatBy(int repeatBy) {
-		RepeatBy = repeatBy;
+		this.repeatBy = repeatBy;
 	}
 	public int getInterval() {
-		return Interval;
+		return interval;
 	}
 	public void setInterval(int interval) {
-		Interval = interval;
+		this.interval = interval;
 	}
 	public int getRepeatOn() {
-		return RepeatOn;
+		return repeatOn;
 	}
 	public void setRepeatOn(int repeatOn) {
-		RepeatOn = repeatOn;
+		this.repeatOn = repeatOn;
 	}
 	public String getStartDate() {
-		return StartDate;
+		return startDate;
 	}
 	public void setStartDate(String startDate) {
-		StartDate = startDate;
+		this.startDate = startDate;
 	}
 	public int getEndsBy() {
-		return EndsBy;
+		return endsBy;
 	}
 	public void setEndsBy(int endsBy) {
-		EndsBy = endsBy;
+		this.endsBy = endsBy;
 	}
 	public String getEndDate() {
-		return EndDate;
+		return endDate;
 	}
 	public void setEndDate(String endDate) {
-		EndDate = endDate;
+		this.endDate = endDate;
 	}
 	public int getEndOnTimes() {
-		return EndOnTimes;
+		return endOnTimes;
 	}
 	public void setEndOnTimes(int endOnTimes) {
-		EndOnTimes = endOnTimes;
+		this.endOnTimes = endOnTimes;
 	}
-	public RecurringSetting(int repeatBy, int interval, int repeatOn,
-			String startDate, int endsBy, String endDate, int endOnTimes) {
-		super();
-		RepeatBy = repeatBy;
-		Interval = interval;
-		RepeatOn = repeatOn;
-		StartDate = startDate;
-		EndsBy = endsBy;
-		EndDate = endDate;
-		EndOnTimes = endOnTimes;
-	}
-
-
-	public RecurringSetting(){}
-	@Override
-	public String toString() {
-		return "RecurringSetting [RepeatBy=" + RepeatBy + ", Interval=" + Interval
-				+ ", RepeatOn=" + RepeatOn + ", StartDate=" + StartDate
-				+ ", EndsBy=" + EndsBy + ", EndDate=" + EndDate + ", EndOnTimes="
-				+ EndOnTimes + "]";
-	}  
-
-
 }
 
 

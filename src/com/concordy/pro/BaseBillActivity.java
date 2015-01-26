@@ -7,43 +7,49 @@ import java.util.Date;
 import java.util.List;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.concordy.pro.bean.Bill.Item;
+import com.concordy.pro.bean.Bill;
 import com.concordy.pro.bean.Category;
 import com.concordy.pro.bean.RecurringSetting;
 import com.concordy.pro.bean.Vendor;
+import com.concordy.pro.http.HttpHelper;
+import com.concordy.pro.http.HttpHelper.HttpResult;
 import com.concordy.pro.http.protocol.BaseProtocol;
 import com.concordy.pro.http.protocol.CategoryProtocol;
 import com.concordy.pro.http.protocol.VendorProtocol;
+import com.concordy.pro.manager.AppException;
 import com.concordy.pro.manager.ThreadManager;
 import com.concordy.pro.manager.ThreadManager.ThreadPoolProxy;
-import com.concordy.pro.ui.base.BaseTitleActivity;
 import com.concordy.pro.ui.widget.CalendarView;
 import com.concordy.pro.ui.widget.CalendarView.OnDateClickListener;
 import com.concordy.pro.ui.widget.CustomerEditText;
+import com.concordy.pro.utils.CommonUtil;
 import com.concordy.pro.utils.ContentValue;
 import com.concordy.pro.utils.LogUtils;
 import com.concordy.pro.utils.PromptManager;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-public abstract  class BaseBillActivity extends BaseTitleActivity {
+public abstract  class BaseBillActivity extends BaseActivity {
 	protected List<Vendor> mVendorList;
 	protected List<Category> mCateList;
 	protected Vendor mVendor;
@@ -55,22 +61,49 @@ public abstract  class BaseBillActivity extends BaseTitleActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		initView();
-		init();
-	}
-	private void init() {
-		getBaseData();
+		
 	}
 	protected View getContentView() {
 		return contentView;
 	}
 	@Override
 	protected void initView() {
+		getBaseData();
 	};
 	/** 封装 Bill数据 */
 	public abstract void fillBill();
 	/** 发送数据 */
-	public void sendData(){}
+	public  <T> void sendData(final String url,final Bill bill){
+		String json = CommonUtil.bean2Json(bill);
+		new AsyncTask<String, Void, T>() {
+			@Override
+			protected void onPreExecute() {
+				PromptManager.showProgressDialog(ct, "请求发送数据...");
+			}
+			@Override
+			protected T doInBackground(String... params) {
+				HttpResult result = null;
+				try {
+					result = HttpHelper.put(params[0], params[1],ContentValue.APPLICATION_JSON);
+				} catch (AppException e) {
+					e.printStackTrace();
+					return (T) e;
+				}
+				return (T) result;
+			}
+			@Override
+			protected void onPostExecute(T result) {
+				PromptManager.closeProgressDialog();
+				if(result instanceof AppException)
+				{ 
+					AppException  ae = (AppException) result;
+					ae.errorTosat(ct);
+					return;
+				}
+				PromptManager.showToast(ct,getResources().getString(R.string.str_send_success));
+			}
+		}.execute(url, json);
+	}
 	/** 初始化数据  */
 	public  void initData(){}
 	/** 获取Category */
@@ -281,8 +314,11 @@ public abstract  class BaseBillActivity extends BaseTitleActivity {
 		@Override
 		public void run() {
 			if (protocol != null) {
-				result = protocol
-						.load(flag, url, ContentValue.APPLICATION_JSON);
+				try {
+					result = protocol.load(flag, url, ContentValue.APPLICATION_JSON);
+				} catch (AppException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		protected Data getResult() {

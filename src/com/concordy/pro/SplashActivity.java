@@ -7,12 +7,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 
-import com.concordy.pro.R;
 import com.concordy.pro.receiver.SleepStateService;
 import com.concordy.pro.utils.ContentValue;
 import com.concordy.pro.utils.SharedPreferencesUtils;
 import com.concordy.pro.utils.StringUtils;
-import com.lidroid.xutils.ViewUtils;
 
 public class SplashActivity extends Activity implements OnClickListener {
 	private Intent service;
@@ -24,7 +22,6 @@ public class SplashActivity extends Activity implements OnClickListener {
 		init();
 	}
 	private void init() {
-		ViewUtils.inject(this);
 		String token = SharedPreferencesUtils.getString(this, ContentValue.SPFILE_TOKEN, "");
 		String pin = SharedPreferencesUtils.getString(this, ContentValue.SPFILE_PIN, "");
 		boolean PINService = SharedPreferencesUtils.getBoolean(this, ContentValue.SPFILE_PIN_TOGGLE, false);

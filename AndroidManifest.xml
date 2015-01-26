@@ -19,53 +19,53 @@
     <uses-permission android:name="android.permission.GET_TASKS" />
 
     <application
-        android:name="com.concordy.pro.manager.BaseApplication"
+        android:name=".manager.BaseApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/CustomTitleBar" >
-        <activity
-            android:name="com.concordy.pro.WelcomeActivity"
-            android:label="@string/app_name" >
+        <activity android:name=".WelcomeActivity" >
         </activity>
-        <activity android:name="com.concordy.pro.RegisterActivity" >
+        <activity android:name=".RegisterActivity" >
         </activity>
-        <activity android:name="com.concordy.pro.MainActivity" >
+        <activity android:name=".MainActivity" >
         </activity>
         <activity
-            android:name="com.concordy.pro.CameraActivity"
+            android:name=".CameraActivity"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.concordy.pro.SplashActivity"
+            android:name=".SplashActivity"
             android:theme="@android:style/Theme.Black.NoTitleBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.concordy.pro.PinLoginActivity" >
+        <activity android:name=".PinLoginActivity" >
         </activity>
-        <activity android:name="com.concordy.pro.BaseBillActivity" >
+        <activity android:name=".BaseBillActivity" >
         </activity>
-        <activity android:name="com.concordy.pro.PinSetItemActivity" >
+        <activity android:name=".PinSetItemActivity" >
         </activity>
-        <activity android:name="com.concordy.pro.ConfigSetActivity" >
+        <activity android:name=".ConfigSetActivity" >
         </activity>
-        <activity android:name="com.concordy.pro.InvoiceActivity" >
+        <activity android:name=".InvoiceActivity" >
         </activity>
-        <activity android:name="com.concordy.pro.LoginActivity" >
+        <activity android:name=".LoginActivity" >
         </activity>
-        <activity android:name="com.concordy.pro.PinSetActivity" >
+        <activity android:name=".PinSetActivity" >
         </activity>
-        <activity android:name="com.concordy.pro.AddBillActivity" >
+        <activity android:name=".AddBillActivity" >
         </activity>
-        <activity android:name="com.concordy.pro.CompanyInf">
+        <activity android:name=".CompanyInf" >
         </activity>
-        <activity android:name="com.concordy.pro.RecurringInvoice">
+        <activity android:name=".RecurringInvoice" >
         </activity>
-        <service android:name="com.leo.demo.receiver.SleepStateService" >
+
+        <service android:name=".receiver.SleepStateService" >
         </service>
     </application>
 

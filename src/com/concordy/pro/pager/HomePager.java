@@ -1,19 +1,16 @@
 package com.concordy.pro.pager;
 
 import java.util.List;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.sax.StartElementListener;
-import android.view.GestureDetector;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.AnimationSet;
@@ -29,10 +26,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.concordy.pro.AddBillActivity;
-import com.concordy.pro.BaseBillActivity;
 import com.concordy.pro.InvoiceActivity;
 import com.concordy.pro.R;
 import com.concordy.pro.bean.Bill;
@@ -40,6 +35,7 @@ import com.concordy.pro.bean.Bills;
 import com.concordy.pro.bean.HttpError;
 import com.concordy.pro.http.protocol.BaseProtocol;
 import com.concordy.pro.http.protocol.BillProtocol;
+import com.concordy.pro.manager.AppException;
 import com.concordy.pro.ui.PullListView;
 import com.concordy.pro.ui.PullListView.IPListViewListener;
 import com.concordy.pro.utils.CommonUtil;
@@ -47,29 +43,21 @@ import com.concordy.pro.utils.ContentValue;
 import com.concordy.pro.utils.LogUtils;
 import com.concordy.pro.utils.PromptManager;
 import com.concordy.pro.utils.StringUtils;
-import com.lidroid.xutils.ViewUtils;
-import com.lidroid.xutils.view.annotation.ViewInject;
 
 public class HomePager extends BasePager implements OnClickListener,
 		OnItemClickListener, IPListViewListener, OnItemLongClickListener {
-	@ViewInject(R.id.bt_add_bill)
 	private Button mBtnAddbill;
-	@ViewInject(R.id.btn_sort_amount)
 	private Button mBtnSortAmount;
-	@ViewInject(R.id.btn_sort_latest)
 	private Button mBtnSortLatest;
-	@ViewInject(R.id.lv_home_bill)
 	private PullListView mLvBills;
 	private BillAdapter adapter;
 	private List<Bill> mListBills;
 	private boolean CURR_SORT = false;
 	private Bills mCurrBill = null;
 	private PopupWindow popupWindow;
-
 	public HomePager(Context ct) {
 		super(ct);
 	}
-
 	/**
 	 * 初始化页面布局
 	 */
@@ -77,7 +65,11 @@ public class HomePager extends BasePager implements OnClickListener,
 	public View initView() {
 		// ViewPager
 		View view = View.inflate(ct, R.layout.pager_home, null);
-		ViewUtils.inject(this, view);
+		mBtnAddbill = (Button) view.findViewById(R.id.bt_add_bill);
+		mBtnSortAmount =(Button) view.findViewById(R.id.btn_sort_amount);
+		mBtnSortLatest = (Button) view.findViewById(R.id.btn_sort_latest);
+		mLvBills =(PullListView) view.findViewById(R.id.lv_home_bill);
+		
 		mBtnAddbill.setOnClickListener(this);
 		mBtnSortLatest.setOnClickListener(this);
 		mBtnSortAmount.setOnClickListener(this);
@@ -88,28 +80,11 @@ public class HomePager extends BasePager implements OnClickListener,
 		mLvBills.setOnItemLongClickListener(this);
 		return view;
 	}
-	protected void refresh() {
-		mLvBills.stopRefresh();
-	}
-	protected void loadMore() {
-		mLvBills.stopLoadMore();
-	}
 	/**
 	 * 初始化数据
 	 */
 	@Override
 	public void initData() {
-		/*
-		 * mBillProtocol = new BillProtocol(); getLastesData();
-		 */
-		// mListBills = getBills();
-		// 1 首先判断本地缓存里面是否有数据。
-		/*mListBills = getCacheData();
-		// 2 如果有数据的话，首先展示缓存里面的数据。。如果没有缓存数据。就直接展示对话框。
-		// 3然后在去链接服务器。如果服务器有数据，就必须从服务器获取数据，然后替换本地的数据。
-		if (mListBills != null) {
-			processData(mListBills);
-		}*/
 		getData(BaseProtocol.GET_DATA);
 	}
 
@@ -128,12 +103,22 @@ public class HomePager extends BasePager implements OnClickListener,
 			protected T doInBackground(String... params) {
 				BillProtocol bp = new BillProtocol();
 				String url = ContentValue.SERVER_URL+"/"+ContentValue.BILL_GETALL+"?page=0";
-				mCurrBill = bp.load(flag,url,ContentValue.APPLICATION_JSON);
+				try {
+					mCurrBill = bp.load(flag,url,ContentValue.APPLICATION_JSON);
+				} catch (AppException e) {
+					e.printStackTrace();
+					return (T) e;
+				}
 				return parseData(bp);
 			}
 			@Override
 			protected void onPostExecute(T t) {
 				mLvBills.stopRefresh();
+				if(t instanceof AppException){
+					AppException ae = (AppException) t;
+					ae.errorTosat(ct);
+					return;
+				}
 				String time = CommonUtil.formate2String(System
 						.currentTimeMillis() + "");
 				mLvBills.setRefreshTime(time);
@@ -201,47 +186,6 @@ public class HomePager extends BasePager implements OnClickListener,
 			break;
 		}
 	}
-	/******显示listView 子项可操作选项 ********//*
-	private void showPopControl(AdapterView<?> parent, View view) {
-		dissmissPopup();
-		// 定义了一个数组
-		int[] location = new int[2];
-		// 给数组里面的元素赋值了 x y
-		view.getLocationOnScreen(location);
-		int x = location[0];
-		int y = location[1];
-		View contentView = View.inflate(ct, R.layout.popup_bill, null);
-		// 初始化控件
-		LinearLayout ll_start = (LinearLayout) contentView
-				.findViewById(R.id.ll_start);
-		ll_start.setOnClickListener(this);
-		LinearLayout ll_uninstall = (LinearLayout) contentView
-				.findViewById(R.id.ll_uninstall);
-		ll_uninstall.setOnClickListener(this);
-		LinearLayout ll_detail = (LinearLayout) contentView
-				.findViewById(R.id.ll_detail);
-		ll_detail.setOnClickListener(this);
-		popupWindow = new PopupWindow(contentView,LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		popupWindow.setOutsideTouchable(true);
-		ColorDrawable colorDrawable = new ColorDrawable(Color.TRANSPARENT);// 创建了一个透明颜色的背景
-		popupWindow.setBackgroundDrawable(colorDrawable);
-		// 步骤2 显示popup 参数1 popup挂载到哪个父窗体上 参数2 对齐方式 参数3 x轴的偏移量
-		popupWindow.showAtLocation(parent,Gravity.CENTER_HORIZONTAL|Gravity.TOP, 0, y+view.getHeight());
-		LogUtils.d("popupWindow-height:"+contentView.getTop()+",bottom:"+contentView.getBottom()+";y="+y);
-		// 从透明到不透明
-		AlphaAnimation alphaAnimation = new AlphaAnimation(0.4f, 1.0f);
-		alphaAnimation.setDuration(500);
-		// 参数1和参数2 代表x轴变量 参数5和6 代表基于控件的哪个点缩放
-		ScaleAnimation animation = new ScaleAnimation(0.1f, 1.0f, 0.1f, 1.0f,
-				0.5f, 0.5f);
-		animation.setDuration(500);
-		// 定义了动画的集合
-		AnimationSet animationSet = new AnimationSet(false);
-		animationSet.addAnimation(alphaAnimation);
-		animationSet.addAnimation(animation);
-		// 动画要想能够正常播放 必须保证控件有背景 popupWindow默认没有背景
-		contentView.startAnimation(animationSet);// 运行了动画
-	}*/
 	/******显示listView 子项可操作选项 ********/
 	private void showPopControl(AdapterView<?> parent, View view) {
 		dissmissPopup();
@@ -373,7 +317,11 @@ public class HomePager extends BasePager implements OnClickListener,
 			protected T doInBackground(String... params) {
 				BillProtocol bp = new BillProtocol();
 				//LogUtils.d("下一页地址："+mCurrBill.getNext());
-				mCurrBill = bp.load(BaseProtocol.GET_MOREDATA,mCurrBill.getNext(), ContentValue.APPLICATION_JSON);
+				try {
+					mCurrBill = bp.load(BaseProtocol.GET_MOREDATA,mCurrBill.getNext(), ContentValue.APPLICATION_JSON);
+				} catch (AppException e) {
+					e.printStackTrace();
+				}
 				return parseData(bp);
 			}
 			@Override
@@ -432,12 +380,5 @@ public class HomePager extends BasePager implements OnClickListener,
 			intent = new Intent(ct, AddBillActivity.class);
 		}
 		ct.startActivity(intent);
-	}
-	
-	class ItemFlingTouchListener implements OnTouchListener{
-		@Override
-		public boolean onTouch(View v, MotionEvent event) {
-			return false;
-		}
 	}
 }

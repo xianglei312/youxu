@@ -20,8 +20,6 @@ import org.apache.http.protocol.HTTP;
  * Created by scleo.
  */
 public class HttpClientFactory {
-	/** http请求最大并发连接数 */
-	private static final int MAX_CONNECTIONS = 10;
 	/** 超时时间 */
 	private static final int TIMEOUT = 10 * 1000;
 	/** 缓存大小 */
@@ -62,8 +60,6 @@ public class HttpClientFactory {
 		HttpClientParams.setRedirecting(params, false);// 设置是否采用重定向
 
 		ConnManagerParams.setTimeout(params, TIMEOUT);// 设置超时
-		ConnManagerParams.setMaxConnectionsPerRoute(params,
-				new ConnPerRouteBean(MAX_CONNECTIONS));// 多线程最大连接数
 		ConnManagerParams.setMaxTotalConnections(params, 10); // 多线程总连接数
 		return params;
 	}

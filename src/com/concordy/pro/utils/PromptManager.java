@@ -20,12 +20,11 @@ import com.concordy.pro.R;
 public class PromptManager {
 	private static ProgressDialog dialog;
 
-	public static void showProgressDialog(Context context) {
+	public static void showProgressDialog(Context context,String msg) {
 		dialog = new ProgressDialog(context);
 		//dialog.setIcon(R.drawable.icon);
-		dialog.setTitle(R.string.app_name);
-
-		dialog.setMessage("请等候，数据加载中……");
+		//dialog.setTitle(R.string.app_name);
+		dialog.setMessage(msg);
 		dialog.show();
 	}
 
@@ -37,7 +36,6 @@ public class PromptManager {
 
 	/**
 	 * 当判断当前手机没有网络时使用
-	 * 
 	 * @param context
 	 */
 	public static void showNoNetWork(final Context context) {

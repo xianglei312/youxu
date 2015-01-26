@@ -15,65 +15,67 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.concordy.pro.R;
 import com.concordy.pro.bean.HttpError;
+import com.concordy.pro.bean.ServiceURL;
 import com.concordy.pro.bean.User;
-import com.concordy.pro.bean.VerifyCode;
 import com.concordy.pro.http.HttpHelper;
 import com.concordy.pro.http.HttpHelper.HttpResult;
+import com.concordy.pro.manager.AppException;
+import com.concordy.pro.manager.BaseApplication;
+import com.concordy.pro.manager.ThreadManager;
+import com.concordy.pro.manager.ThreadManager.ThreadPoolProxy;
 import com.concordy.pro.receiver.SmsReceiver;
 import com.concordy.pro.receiver.SmsReceiver.SmsResultListener;
-import com.concordy.pro.ui.base.BaseTitleActivity;
 import com.concordy.pro.utils.CommonUtil;
 import com.concordy.pro.utils.ContentValue;
+import com.concordy.pro.utils.LogUtils;
 import com.concordy.pro.utils.PromptManager;
 import com.concordy.pro.utils.SharedPreferencesUtils;
 import com.concordy.pro.utils.StringUtils;
-import com.lidroid.xutils.ViewUtils;
-import com.lidroid.xutils.util.LogUtils;
-import com.lidroid.xutils.view.annotation.ViewInject;
 
-public class RegisterActivity extends BaseTitleActivity implements
+public class RegisterActivity extends BaseActivity implements
 		OnClickListener {
-	@ViewInject(R.id.btn_done_regist)
 	private Button regist;
-	@ViewInject(R.id.btn_request_code)
 	private Button reqPhoneCode;
-	@ViewInject(R.id.et_phone_number)
 	private EditText etUsername;
-	@ViewInject(R.id.et_verical_code)
-	private EditText etVerivalCode;
-	@ViewInject(R.id.btn_left)
+	private EditText etVerfyCode;
 	private Button mBtnBack;
-	@ViewInject(R.id.tv_txt_title)
 	private TextView mTitle;
 	private SmsReceiver mReceiver;
 	private static final String SMS_ACTION = "android.provider.Telephony.SMS_RECEIVED";
+	private static final int DATA_OK = 200;
+	private static final int DATA_FAILED = -0x01;
 	/******** 验证码请求地址 **********/
-	private String mVerifyUrl = ContentValue.SERVER_URI + "/"
-			+ ContentValue.VERICAL_REQUEST;
-	private String mRegistUrl = ContentValue.SERVER_URI + "/"
-			+ ContentValue.REGIST_URI;
+	private String mVerifyUrl = ServiceURL.VERICAL_REQUEST;
 	private IntentFilter mItFilter;
 	private int mSeconds = 60;
 	private boolean mTimerRunning = true;
-
+	private ThreadPoolProxy mLongPool;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_regist);
 		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, layout);// 设置titleBar
+		mLongPool = ThreadManager.getLongPool();
+		mActivities.add(this);
 		initView();
 	}
-
 	@Override
 	protected void initView() {
-		ViewUtils.inject(this);
-		String localPhone = getPhone();
+		regist = (Button) this.findViewById(R.id.btn_done_regist);
+		reqPhoneCode = (Button) this.findViewById(R.id.btn_request_code);
+		etUsername = (EditText) this.findViewById(R.id.et_phone_number);
+		etVerfyCode = (EditText) this.findViewById(R.id.et_verical_code);
+		mBtnBack = (Button) this.findViewById(R.id.btn_left);
+		mTitle = (TextView) this.findViewById(R.id.tv_txt_title);
+		
+	
+		
 		regist.setOnClickListener(this);
 		reqPhoneCode.setOnClickListener(this);
 		mBtnBack.setOnClickListener(this);
 		mTitle.setText(getString(R.string.tv_title_regist));
+		String localPhone = getPhone();
 		if (!StringUtils.isEmpty(localPhone))
 			etUsername.setText(localPhone);
 	}
@@ -100,14 +102,11 @@ public class RegisterActivity extends BaseTitleActivity implements
 	 */
 	private String getPhone() {
 		mTeleManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-		// if(m)
-		// LogUtils.d(mTeleManager.getLine1Number());
 		String phone = mTeleManager.getLine1Number();
 		if (StringUtils.isEmpty(phone)) {
 			return "";
 		}
 		phone = phone.replace("+86", "");
-		LogUtils.d("截取后的phone：" + phone);
 		return phone;
 	}
 
@@ -126,12 +125,6 @@ public class RegisterActivity extends BaseTitleActivity implements
 			break;
 		}
 	}
-
-	/***
-	 * 校验验证码
-	 * 
-	 * @param <T>
-	 */
 	/***
 	 * 校验验证码
 	 * 
@@ -139,17 +132,19 @@ public class RegisterActivity extends BaseTitleActivity implements
 	 */
 	private <T> void checkVerifyCode() {
 		// PromptManager.showToast(this, "被点击了");
+		//BaseApplication
 		if (CommonUtil.isNetworkAvailable(getApplicationContext()) == ContentValue.NO_NETWORK) {
 			PromptManager.showToast(getApplicationContext(), getResources()
 					.getString(R.string.err_no_network));
 			return;
 		}
-		String etCode = etVerivalCode.getText().toString();
-		if (StringUtils.isEmpty(etCode)) {
+		String verCode = etVerfyCode.getText().toString();
+		String phone  = etUsername.getText().toString();
+		if (StringUtils.isEmpty(verCode)) {
 			PromptManager.showToast(getApplicationContext(),
 					R.string.err_vercode_empty);
 		} else {
-			if (etCode.length() < 6) {
+			if (verCode.length() < 6) {
 				PromptManager.showToast(getApplicationContext(),
 						R.string.err_vercode_type_error);
 				return;
@@ -160,23 +155,21 @@ public class RegisterActivity extends BaseTitleActivity implements
 			url = url + "?" + ContentValue.VERICAL_PHONE + "="
 					+ etUsername.getText().toString() + "&"
 					+ ContentValue.VERICAL_REQUEST + "="
-					+ etVerivalCode.getText().toString();
+					+ etVerfyCode.getText().toString();
 			com.concordy.pro.utils.LogUtils.d("访问地址：" + url);
 			new AsyncTask<String, Void, T>() {
 				@Override
 				protected void onPreExecute() {
 					showLoadDialog();
 				};
-
 				@Override
 				protected T doInBackground(String... params) {
-					HttpResult result = HttpHelper.get(params[0], params[1]);
+					/*HttpResult result = HttpHelper.get(params[0], params[1]);
 					// LogUtils.d("result"+);
 					if (result != null && result.getCode() == 200)
-						return regist();
+						return regist();*/
 					return null;
 				}
-
 				@Override
 				protected void onPostExecute(T t) {
 					if (t == null)
@@ -197,29 +190,59 @@ public class RegisterActivity extends BaseTitleActivity implements
 				}
 			}.execute(url, ContentValue.APPLICATION_JSON);
 		}
+		regist();
 	}
 
 	/***
 	 * 注册用户
-	 * 
-	 * @param <T>
 	 */
-	private <T> T regist() {
-		// 创建User Bean对象封装数据
-		User user = new User();
-		user.setPhone(etUsername.getText().toString());
-		user.setPassword(etVerivalCode.getText().toString());
-		user.setConfirmPassword(etVerivalCode.getText().toString());
-		user.setEmail("123456@qq.com");
-		// 将对象转换成json字符串提交服务器
-		String json = CommonUtil.bean2Json(user);
-		com.concordy.pro.utils.LogUtils.d("regist:" + json);
-		HttpResult result = HttpHelper.post(mRegistUrl, json,
-				ContentValue.APPLICATION_JSON);
-		if (result != null) {
-			return parseData(result);
-		}
-		return null;
+	private void regist()  {
+		final Handler rh = new Handler(){
+			@Override
+			public void handleMessage(Message msg) {
+				if(msg.what ==DATA_FAILED){
+					((AppException) msg.obj).errorTosat(ct);
+					return;
+				}else{
+					String result = (String) msg.obj;
+					if(msg.what==DATA_OK){
+						User user = CommonUtil.json2Bean(result, User.class);
+						goNext(user);
+					}else{
+						HttpError error = CommonUtil.json2Bean(result, HttpError.class);
+						PromptManager.showToast(ct, error.getErrorMsg());
+						return;
+					}
+				}
+			}
+		};
+		mLongPool.execute(new Thread(){
+			@Override
+			public void run() {
+				Message msg= Message.obtain();
+				// 创建User Bean对象封装数据
+				User user = new User();
+				user.setPhone(etUsername.getText().toString());
+				user.setPassword(etVerfyCode.getText().toString());
+				user.setConfirmPassword(etVerfyCode.getText().toString());
+				user.setEmail("123456@qq.com");
+				// 将对象转换成json字符串提交服务器
+				String json = CommonUtil.bean2Json(user);
+				try {
+					HttpResult result = HttpHelper.post(ServiceURL.REGIST, json,
+							ContentValue.APPLICATION_JSON);
+					if(result!=null){
+						msg.what = result.getCode();
+						msg.obj = result.getString();
+					}
+				} catch (AppException e) {
+					e.printStackTrace();
+					msg.what = DATA_FAILED;
+					msg.obj = e;
+				}
+				rh.sendMessage(msg);
+			}
+		});
 	}
 
 	/******** 解析服务器数据 ***********/
@@ -228,7 +251,7 @@ public class RegisterActivity extends BaseTitleActivity implements
 		 * LogUtils.d("Error_Code:" + result.getCode() + ",结果：" +
 		 * result.getString());
 		 */
-		String json = "";
+		/*String json = "";
 		if (result != null) {
 			json = result.getString();
 			com.concordy.pro.utils.LogUtils.d("regist:" + json);
@@ -240,7 +263,7 @@ public class RegisterActivity extends BaseTitleActivity implements
 					return null;
 				return (T) CommonUtil.json2Bean(json, HttpError.class);
 			}
-		}
+		}*/
 		return null;
 	}
 
@@ -267,58 +290,42 @@ public class RegisterActivity extends BaseTitleActivity implements
 	 */
 	private void requestVercicalCode() {
 		mTimerRunning = true;
-		if (CommonUtil.isNetworkAvailable(getApplicationContext()) == ContentValue.NO_NETWORK) {
-			PromptManager.showToast(getApplicationContext(), getResources()
+		BaseApplication ba = (BaseApplication)getApplication();
+		if (!ba.isNetworkConnected()) {
+			PromptManager.showToast(ba.getBaseContext(), getResources()
 					.getString(R.string.err_no_network));
 			return;
 		}
-		if (StringUtils.isEmpty(etUsername.getText().toString())
-				|| etUsername == null) {
+		if (etUsername == null|| StringUtils.isEmpty(etUsername.getText().toString())) {
 			PromptManager.showToast(getApplicationContext(), getResources()
 					.getString(R.string.err_vercode_empty));
 			return;
 		}
-		new AsyncTask<String, Void, String>() {
-			@Override
-			protected void onPreExecute() {
-				countDown();
-				// 注册广播监听短信验证码
-				initReceiver();
-			};
+		requestCode();
+	}
 
+	private void requestCode() {
+		mLongPool.execute(new Thread() {
 			@Override
-			protected String doInBackground(String... params) {
-				// 通知服务器发送短信验证码，更新button按钮动作。
-				// CommonUtil.noticeSMSCode(etUsername.getText().toString())
-				HttpResult result = HttpHelper.post(params[0], "=" + params[1],
-						ContentValue.APPLICATION_FORM);
-				if (result != null) {
-					String str = result.getString();
-					com.concordy.pro.utils.LogUtils.d("请求错误：" + str);
-					return str;
-				}
-				return "";
-			}
-
-			@Override
-			protected void onPostExecute(String result) {
-				if (!"".equals(result)) {
-					// com.leo.demo.utils.LogUtils.d(result.getString());
-					PromptManager
-							.showToast(RegisterActivity.this, getResources()
-									.getString(R.string.str_send_success));
-				} else {
-					PromptManager.showToast(RegisterActivity.this,
-							getResources().getString(R.string.err_send_failed));
-				}
-				com.concordy.pro.utils.LogUtils.d("手机验证码：" + result);
-				if (!StringUtils.isEmpty(result)) {
-					VerifyCode code = CommonUtil.json2Bean(result,
-							VerifyCode.class);
-					etVerivalCode.setText(code.getSendCode());
+			public void run() {
+				Message msg;
+				HttpHelper.sendNotice();
+				while (mTimerRunning) {
+					 msg = Message.obtain();
+					// 获取一个消息对象
+					msg.arg1 = mSeconds;// 设置参数
+					msg.what = 0;// 参数类型
+					mSeconds--;
+					try {
+						// 休眠1秒
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					handle.sendMessage(msg);// 发送消息
 				}
 			}
-		}.execute(mVerifyUrl, etUsername.getText().toString());
+		});
 	}
 
 	/******** 显示dialog *********/
@@ -338,7 +345,6 @@ public class RegisterActivity extends BaseTitleActivity implements
 
 	/**** 初始化广播接收者 ******/
 	protected void initReceiver() {
-		// TODO Auto-generated method stub
 		if (mReceiver == null)
 			mReceiver = new SmsReceiver();
 		// 设置过滤器对象
@@ -349,7 +355,7 @@ public class RegisterActivity extends BaseTitleActivity implements
 			@Override
 			public void onReceive(String msg) {
 				if (!StringUtils.isEmpty(msg)) {
-					etVerivalCode.setText(msg);
+					etVerfyCode.setText(msg);
 				}
 			}
 		});
@@ -357,7 +363,7 @@ public class RegisterActivity extends BaseTitleActivity implements
 		registerReceiver(mReceiver, mItFilter);
 	}
 
-	/*** 倒计时 **/
+	/*** 倒计时 **//*
 	private void countDown() {
 		if (mTaskThread == null)
 			mTaskThread = new Thread(new Runnable() {
@@ -379,7 +385,7 @@ public class RegisterActivity extends BaseTitleActivity implements
 				}
 			});
 		mTaskThread.start();
-	}
+	}*/
 
 	private Handler handle = new Handler() {
 		@Override

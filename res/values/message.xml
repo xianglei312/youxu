@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="http_no_network">网络连接失败，请检查网络设置</string>
+    <string name="json_parser_failed">数据解析失败</string>
+    <string name="http_error_code">网络异常，错误码：%d</string>
+    <string name="http_connect_error">网络异常</string>
+    <string name="http_socket_error">网络异常，请求超时</string>
+    <string name="http_unknowhost_error">网络异常，未知域名</string>
+    <string name="app_run_code_error">应用程序运行时异常</string>
+</resources>

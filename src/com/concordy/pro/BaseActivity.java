@@ -1,8 +1,10 @@
-package com.concordy.pro.ui.base;
+package com.concordy.pro;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import com.concordy.pro.R;
 
 import android.app.Activity;
 import android.content.Context;
@@ -10,19 +12,18 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.Window;
 
-public class BaseActivity extends Activity {
+public abstract class BaseActivity extends Activity {
 	private static BaseActivity mForegroundActivity = null;
-	private static final List<BaseActivity> mActivities = new LinkedList<BaseActivity>();
+	protected static final List<BaseActivity> mActivities = new LinkedList<BaseActivity>();
 	public Context ct;
+	protected int layout;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);//设置自定义titleBar
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);//设置全屏
+		layout = R.layout.layout_title_bar;
 		ct = getApplicationContext();
-		init();
-		initView();
-		initActionBar();
 	}
 
 	@Override
@@ -40,8 +41,7 @@ public class BaseActivity extends Activity {
 	protected void init() {
 	}
 
-	protected void initView() {
-	}
+	protected abstract void initView() ;
 
 	protected void initActionBar() {
 
@@ -72,7 +72,7 @@ public class BaseActivity extends Activity {
 	public static BaseActivity getForegroundActivity() {
 		return mForegroundActivity;
 	}
-
+	
 	public static BaseActivity getCurrentActivity() {
 		List<BaseActivity> copy;
 		synchronized (mActivities) {

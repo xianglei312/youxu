@@ -8,19 +8,13 @@ import android.widget.Button;
 
 import com.concordy.pro.CompanyInf;
 import com.concordy.pro.ConfigSetActivity;
-import com.concordy.pro.PinSetActivity;
 import com.concordy.pro.R;
 import com.concordy.pro.ui.ItemClickView;
-import com.lidroid.xutils.ViewUtils;
-import com.lidroid.xutils.view.annotation.ViewInject;
 
 
 public class MorePager extends BasePager implements OnClickListener{
-	@ViewInject(R.id.icv_com_info)
 	private ItemClickView mIcvCominfo;
-	@ViewInject(R.id.icv_more_set)
 	private ItemClickView mIcvMorSet;
-	
 	private Button btn;
 	
 	public MorePager(Context ct) {
@@ -29,7 +23,9 @@ public class MorePager extends BasePager implements OnClickListener{
 	@Override
 	public View initView() {
 		View view = View.inflate(ct,R.layout.pager_more, null);
-		ViewUtils.inject(this, view);
+		mIcvCominfo = (ItemClickView) view.findViewById(R.id.icv_com_info);
+		mIcvMorSet = (ItemClickView) view.findViewById(R.id.icv_more_set);
+		
 		btn = (Button) view.findViewById(R.id.setting);
 		
 		mIcvMorSet.setOnClickListener(this);
@@ -37,7 +33,6 @@ public class MorePager extends BasePager implements OnClickListener{
 		btn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				Intent intent = new Intent(ct,CompanyInf.class );
 				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				ct.startActivity(intent);

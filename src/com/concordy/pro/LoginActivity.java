@@ -1,9 +1,5 @@
 package com.concordy.pro;
 
-import java.io.UnsupportedEncodingException;
-
-import org.apache.http.entity.StringEntity;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -19,36 +15,21 @@ import com.concordy.pro.bean.HttpError;
 import com.concordy.pro.bean.User;
 import com.concordy.pro.http.HttpHelper;
 import com.concordy.pro.http.HttpHelper.HttpResult;
-import com.concordy.pro.ui.base.BaseTitleActivity;
+import com.concordy.pro.manager.AppException;
 import com.concordy.pro.utils.CommonUtil;
 import com.concordy.pro.utils.ContentValue;
 import com.concordy.pro.utils.LogUtils;
 import com.concordy.pro.utils.PromptManager;
 import com.concordy.pro.utils.SharedPreferencesUtils;
 import com.concordy.pro.utils.StringUtils;
-import com.lidroid.xutils.HttpUtils;
-import com.lidroid.xutils.ViewUtils;
-import com.lidroid.xutils.exception.HttpException;
-import com.lidroid.xutils.http.RequestParams;
-import com.lidroid.xutils.http.ResponseInfo;
-import com.lidroid.xutils.http.callback.RequestCallBack;
-import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
-import com.lidroid.xutils.view.annotation.ViewInject;
 
-public class LoginActivity extends BaseTitleActivity implements OnClickListener {
-	@ViewInject(R.id.et_pwd)
+public class LoginActivity extends BaseActivity implements OnClickListener {
 	private EditText etPwd;
-	@ViewInject(R.id.et_username)
 	private EditText etUsername;
-	@ViewInject(R.id.tv_forget_pwd_login)
 	private TextView mFindPwd;
-	@ViewInject(R.id.btn_login)
 	private Button login;
-	@ViewInject(R.id.btn_left)
 	private Button mBtnLeft;
-	@ViewInject(R.id.btn_right)
 	private Button mBtnRight;
-	@ViewInject(R.id.tv_txt_title)
 	private TextView mTvTitle;
 	private ProgressDialog dialog;
 
@@ -57,6 +38,7 @@ public class LoginActivity extends BaseTitleActivity implements OnClickListener 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, super.layout);// 设置titleBar
+		mActivities.add(this);
 		initView();
 	}
 
@@ -152,7 +134,15 @@ public class LoginActivity extends BaseTitleActivity implements OnClickListener 
 
 	@Override
 	protected void initView() {
-		ViewUtils.inject(this);
+		etPwd = (EditText) findViewById(R.id.et_pwd);
+		etUsername = (EditText) findViewById(R.id.et_username);
+		mFindPwd = (TextView) findViewById(R.id.tv_forget_pwd_login);
+		login = (Button) findViewById(R.id.btn_login);
+		mBtnLeft = (Button) findViewById(R.id.btn_left);
+		mBtnRight = (Button) findViewById(R.id.btn_right);
+		mTvTitle = (TextView) findViewById(R.id.tv_txt_title);
+		
+		
 		// login = (Button) findViewById(R.id.btn_login);
 		String username = SharedPreferencesUtils.getString(ct,
 				ContentValue.SPFILE_USERNAME, "");
@@ -215,12 +205,17 @@ public class LoginActivity extends BaseTitleActivity implements OnClickListener 
 		@Override
 		protected String doInBackground(String... params) {
 			LogUtils.d("请求登录中....");
-			HttpResult httpResult = HttpHelper.post(params[0], params[1],
-					ContentValue.APPLICATION_JSON);
+			HttpResult httpResult;
 			String result = "";
-			if (httpResult != null) {
-				result = httpResult.getString();
-				httpCode = httpResult.getCode();
+			try {
+				httpResult = HttpHelper.post(params[0], params[1],
+						ContentValue.APPLICATION_JSON);
+				if (httpResult != null) {
+					result = httpResult.getString();
+					httpCode = httpResult.getCode();
+				}
+			} catch (AppException e) {
+				e.printStackTrace();
 			}
 			return result;
 		}
